@@ -144,7 +144,14 @@ Use `references/report-template.md`. In Quick mode, write the short report the t
 - `<n>` is the next round number: `1` for the first review of that branch, `2` for the next one, and so on.
 - The report's header records the date, the branch, the base, the reviewed commit and whether uncommitted changes were included.
 
-**Keep reports out of git.** Reports are personal working files. The first time, check whether `.reviews/` is ignored (`git check-ignore -q .reviews/`). If it isn't, add `.reviews/` to `.git/info/exclude`: that file is local to the user's clone, so the project's `.gitignore` stays untouched. Mention it to the user.
+**Keep reports out of git.** Reports are personal working files and must never be committed or pushed. Before writing the report:
+
+1. Check whether `.reviews/` is ignored: `git check-ignore -q .reviews/`.
+2. If it isn't, add it to the project's `.gitignore` at the root of the repository (create the file if it doesn't exist), on its own line with a comment: `# Code review reports (review-changes)` followed by `.reviews/`. Don't change anything else in the file.
+3. Tell the user that `.gitignore` changed and that they need to commit it. Don't commit it yourself.
+4. If `.reviews/` was already committed (`git ls-files .reviews` lists files), ignoring it isn't enough: warn the user and suggest `git rm -r --cached .reviews` to stop tracking it without deleting the reports.
+
+In later reviews, don't report that `.gitignore` line as a finding or count it as part of the change.
 
 **Finding IDs.** Number the findings `F1`, `F2`, ... in order of priority. IDs restart in each round; later rounds refer to earlier findings with the round number in front (`R1-F3` is finding F3 of round 1).
 

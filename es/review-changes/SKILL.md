@@ -144,7 +144,14 @@ Usa `references/report-template.md`. En modo Rápida, escribe el informe corto q
 - `<n>` es el siguiente número de ronda: `1` para la primera revisión de esa rama, `2` para la siguiente, y así sucesivamente.
 - La cabecera del informe registra la fecha, la rama, la base, el commit revisado y si se incluyeron cambios sin commit.
 
-**Mantén los informes fuera de git.** Los informes son archivos de trabajo personales. La primera vez, comprueba si `.reviews/` está ignorada (`git check-ignore -q .reviews/`). Si no lo está, añade `.reviews/` a `.git/info/exclude`: ese archivo es local a la copia del usuario, así que el `.gitignore` del proyecto no se toca. Díselo al usuario.
+**Mantén los informes fuera de git.** Los informes son archivos de trabajo personales y nunca deben entrar en un commit ni subirse. Antes de escribir el informe:
+
+1. Comprueba si `.reviews/` está ignorada: `git check-ignore -q .reviews/`.
+2. Si no lo está, añádela al `.gitignore` del proyecto en la raíz del repositorio (crea el archivo si no existe), en su propia línea y con un comentario: `# Code review reports (review-changes)` seguido de `.reviews/`. No cambies nada más del archivo.
+3. Avisa al usuario de que `.gitignore` cambió y de que tiene que hacer commit de ese cambio. No lo hagas tú.
+4. Si `.reviews/` ya estaba en un commit (`git ls-files .reviews` lista archivos), ignorarla no basta: avisa al usuario y sugiérele `git rm -r --cached .reviews` para dejar de seguirla sin borrar los informes.
+
+En las revisiones siguientes, no reportes esa línea de `.gitignore` como hallazgo ni la cuentes como parte del cambio.
 
 **IDs de los hallazgos.** Numera los hallazgos `F1`, `F2`, ... por orden de prioridad. Los IDs empiezan de nuevo en cada ronda; las rondas posteriores se refieren a los hallazgos anteriores con el número de ronda delante (`R1-F3` es el hallazgo F3 de la ronda 1).
 
