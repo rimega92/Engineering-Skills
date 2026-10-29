@@ -15,7 +15,34 @@ Both versions of a skill have the same folder name and the same content.
 
 | Skill | What it's for | Stack |
 |-------|---------------|-------|
-| _No skills yet_ | | |
+| [`readme-docs`](#readme-docs) | Create a project's README.md, or update it after code changes | Agnostic |
+
+### readme-docs
+
+Creates and maintains a project's `README.md` following a documentation standard. Each section of the standard is classified as mandatory (`[M]`), conditional (`[C]`, required when it applies to the project) or optional (`[O]`). The standard covers identification, quick start, features, architecture, APIs and integrations, quality, operations and versioning.
+
+**When to use it**
+- To document a project that has no README, or only a minimal one.
+- To update the README after changing the code: new dependencies, endpoints, environment variables, services, and so on.
+
+**How to use it**
+- `/readme-docs`: picks the mode on its own. It uses create mode if there's no README with real content, and update mode otherwise.
+- `/readme-docs create` or `/readme-docs update`: forces a mode.
+- Or just ask: _"Document this project"_, _"Update the README with the latest changes"_.
+
+**How it works**
+- It infers everything it can from the project (manifests, scripts, configuration, Docker, CI, tests, code). For facts only the team knows, such as status, owners or the reasons behind decisions, it asks you all its questions in a single message. Anything you leave unanswered becomes a visible `Pending` marker.
+- In update mode it reads a sync marker at the end of the README, `<!-- readme-docs:sync commit=... date=... -->`, reviews the changes since that commit and edits only the affected sections. It keeps text written by people, and it asks before removing a whole section.
+- It moves long content (full API reference, data model, and so on) into `docs/` and links it from the README.
+- It never copies secrets, and it checks that the commands and paths it documents actually exist.
+- It writes READMEs that are easy to read. Sections meant for any reader use plain language, and sections that need it (architecture, APIs, operations) use technical language. Markdown follows markdownlint and GitHub Flavored Markdown. Mermaid diagrams are kept small and use a color palette that reads well in both light and dark mode, with a legend.
+- It keeps the existing README's language. A new README is written in the language you use to talk to it.
+
+**Files**
+- `SKILL.md`: the workflow for both modes.
+- `references/standard.md`: the documentation standard, with each section's classification.
+- `references/evidence-map.md`: which files in a project trigger or affect each section.
+- `references/style.md`: style guide for wording, Markdown and Mermaid diagrams, including the color palette.
 
 ## Installation
 
