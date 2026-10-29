@@ -39,6 +39,10 @@ description: <what the skill does and when to use it; this is what triggers it>
 
 The `description` decides when the skill gets triggered. Make it specific about when to use the skill, and write it in that folder's language.
 
+## Pending work
+
+`TODO.local.md` holds the project's pending work. It's git-ignored (`*.local.md`), so it stays local. Check it when deciding what to work on, and keep it updated.
+
 ## Conversation
 
 The owner usually writes in Spanish. Reply in Spanish.

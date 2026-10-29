@@ -40,7 +40,7 @@ Crea y mantiene el `README.md` de un proyecto siguiendo un estándar de document
 **Cómo funciona**
 - Deduce todo lo que puede del proyecto (manifiestos, scripts, configuración, Docker, CI, pruebas, código). Para los datos que solo conoce el equipo, como el estado, los responsables o el porqué de las decisiones, te hace todas las preguntas en un solo mensaje. Lo que dejes sin responder queda como un marcador visible de `Pendiente`.
 - En el modo actualizar lee una marca de sincronización al final del README, `<!-- readme-docs:sync commit=... date=... -->`, revisa los cambios desde ese commit y edita solo los apartados afectados. Conserva el texto escrito por personas y pregunta antes de eliminar un apartado completo.
-- Mueve el contenido extenso (referencia completa de la API, modelo de datos, etc.) a `docs/` y lo enlaza desde el README.
+- Mueve el contenido extenso (referencia completa de la API, modelo de datos, etc.) a archivos dentro de `docs/` con nombres estándar (`architecture.md`, `api.md`, `data-model.md`, ...) y los enlaza desde el README. El modo actualizar también mantiene al día esos archivos. Los archivos de `docs/` escritos por personas se enlazan, pero nunca se modifican.
 - Nunca copia secretos y comprueba que los comandos y rutas que documenta existen de verdad.
 - Escribe README fáciles de leer. Los apartados para cualquier lector usan lenguaje sencillo, y los que lo necesitan (arquitectura, APIs, operación) usan lenguaje técnico. El Markdown sigue markdownlint y GitHub Flavored Markdown. Los diagramas Mermaid son pequeños y usan una paleta de colores que se lee bien en modo claro y oscuro, con leyenda.
 - Mantiene el idioma del README existente. Un README nuevo se escribe en el idioma en el que le hablas.
@@ -61,12 +61,14 @@ Una skill es una carpeta que contiene un archivo `SKILL.md`. Para instalar una, 
 ```bash
 git clone https://github.com/rimega92/Rimega-Skills.git
 
-# Instalación personal (versión en español)
+# Instalación personal
 cp -r Rimega-Skills/es/<nombre-skill> ~/.claude/skills/
 
-# Instalación en un solo proyecto (versión en inglés)
-cp -r Rimega-Skills/en/<nombre-skill> /ruta/al/proyecto/.claude/skills/
+# Instalación en un solo proyecto
+cp -r Rimega-Skills/es/<nombre-skill> /ruta/al/proyecto/.claude/skills/
 ```
+
+Para la versión en inglés, cambia `es/` por `en/`.
 
 Instala solo una versión de idioma de cada skill. Las dos versiones comparten el mismo `name`, así que instalar ambas provoca un conflicto.
 

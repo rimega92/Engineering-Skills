@@ -19,7 +19,7 @@ If the user names the mode (`/readme-docs create` or `/readme-docs update`), use
 - **Everything comes from the project.** Every fact in the README must trace back to a file, a command or an answer from the user. Never invent versions, commands, endpoints, owners or business rules.
 - **Ask for what the code doesn't say.** Some facts are known only to the team (project status, owners, why a decision was made). Gather these questions and ask them all at once in a single message. Anything left unanswered is marked as pending (see below), never filled in with a guess.
 - **Proportional to the project.** A small library doesn't need all eight blocks of the standard. Include the `[M]` sections, the `[C]` sections that apply, and only the `[O]` sections that add real value.
-- **The README is the entry point.** Long content (a full API reference, a detailed data model, long operational procedures) goes in files under `docs/` and is linked from the README. If a source of truth exists (OpenAPI, database schema, CHANGELOG), link to it instead of copying it.
+- **The README is the entry point.** Long content (a full API reference, a detailed data model, long operational procedures) goes in files under `docs/` and is linked from the README (see "`docs/` files"). If a source of truth exists (OpenAPI, database schema, CHANGELOG), link to it instead of copying it.
 - **Never secrets.** Don't copy values from `.env`, credentials, tokens or internal URLs containing credentials. Document the variable's name, what it's for and a fictitious example value.
 - **Easy to read.** Plain language in the sections meant for any reader and technical language where a section calls for it, clean Markdown, and clear Mermaid diagrams with color when it helps. Follow `references/style.md` in everything you write.
 - **Keep the README's language.** If a README already exists, keep its language. For a new one, use the language the user is writing in, unless they ask for another.
@@ -46,9 +46,9 @@ If the user names the mode (`/readme-docs create` or `/readme-docs update`), use
    - Look for the sync marker at the end of the README. If it exists and the project uses git, review `git diff <commit>..HEAD`, plus uncommitted changes (`git diff HEAD`) and new untracked files.
    - If there's no marker, ask the user where to start reviewing from (a commit, a base branch or a date). If they don't know, compare the whole README against the current state of the project.
    - If the user tells you what changed, start there, but confirm it against the code.
-   - Ignore changes to the README itself and to `docs/`.
-2. **Map changes to sections.** Use `references/evidence-map.md` to see which sections each modified file affects. A change can make a `[C]` section apply that didn't before (for example, a message queue was added) or make an existing one obsolete.
-3. **Edit only what's affected.** Change only the affected sections. Don't rewrite or restyle the rest. Text written by people is kept as is, unless it contradicts the current code; in that case, correct it and mention it in the report. If a change affects what a diagram shows (a new service, a relationship that no longer exists), update the diagram too. Anything new you write follows `references/style.md`, even if the rest of the README uses a different style.
+   - Ignore changes to the README itself and to the files in `docs/`: they're the output of the documentation, not the cause.
+2. **Map changes to sections.** Use `references/evidence-map.md` to see which sections each modified file affects. A change can make a `[C]` section apply that didn't before (for example, a message queue was added) or make an existing one obsolete. A section can live in the README, in a `docs/` file or in both (a summary in the README and the detail in `docs/`); check both places.
+3. **Edit only what's affected.** Change only the affected sections, both in the README and in the `docs/` files the skill maintains. If you change the detail in `docs/`, check that the README summary is still correct, and vice versa. Don't rewrite or restyle the rest. Text written by people is kept as is, unless it contradicts the current code; in that case, correct it and mention it in the report. If a change affects what a diagram shows (a new service, a relationship that no longer exists), update the diagram too. Anything new you write follows `references/style.md`, even if the rest of the README uses a different style.
 4. **Don't delete without asking.** If a whole section looks obsolete (for example, it documents a service that no longer exists), propose removing it and wait for confirmation.
 5. **Check the `[M]` sections.** If the README is missing a mandatory section, add it even if it's unrelated to the changes.
 6. **Verify, update the marker and report**, as in steps 5 to 7 of create mode. In the report, list the sections you modified and the code change behind each one.
@@ -61,17 +61,39 @@ When a fact that only the team knows is missing, leave a visible marker in its p
 > **Pending:** add the owning team and the support channel.
 ```
 
-In update mode, review existing pending items and resolve any you can now complete.
+In update mode, review existing pending items, in the README and in `docs/`, and resolve any you can now complete.
+
+## `docs/` files
+
+When a section takes up more than a screen, move it to a file under `docs/` and leave a short summary with a link in the README. Use these names:
+
+| File | Content |
+|---|---|
+| `docs/architecture.md` | Architecture, components and modules, diagrams, architecture decisions |
+| `docs/api.md` | Endpoints, integration contracts, authentication, messaging, usage examples |
+| `docs/data-model.md` | Entities, relationships, database and migrations |
+| `docs/configuration.md` | Environment variables, per-environment configuration |
+| `docs/deployment.md` | Deployment, infrastructure, CI/CD |
+| `docs/operations.md` | Logging and observability, monitoring, operational procedures, troubleshooting |
+| `docs/development.md` | Testing strategy, coding standards, contribution, debugging |
+
+Create only the files you need. Each file:
+
+- Starts with a `#` heading and a link back to the README.
+- Follows `references/style.md`.
+- Ends with the sync marker. The marker shows that the skill maintains the file.
+
+`docs/` files without a marker were written by people. Link to them from the README, but don't modify them. If they contradict the code, flag it in the report. If one of them covers the same ground as a file in the table, ask the user whether the skill may maintain it; if they agree, add the marker and use it instead of creating a new one.
 
 ## Sync marker
 
-When you finish, add (or replace) this line as the last line of the README:
+When you finish, add (or replace) this line as the last line of the README and of every `docs/` file you created or modified:
 
 ```markdown
 <!-- readme-docs:sync commit=<short HEAD sha> date=<YYYY-MM-DD> -->
 ```
 
-If the project doesn't use git, leave out `commit=` and keep only the date. The marker is invisible when the Markdown is rendered, and it tells the next update where to start reviewing from.
+If the project doesn't use git, leave out `commit=` and keep only the date. The marker is invisible when the Markdown is rendered. The README's marker tells the next update where to start reviewing changes from; the marker in `docs/` files shows which ones the skill maintains.
 
 ## Monorepos
 
