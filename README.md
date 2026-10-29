@@ -19,6 +19,7 @@ Both versions of a skill have the same folder name and the same content.
 
 - [Skills](#skills)
   - [readme-docs](#readme-docs)
+  - [review-changes](#review-changes)
 - [Repository structure](#repository-structure)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -31,6 +32,7 @@ Both versions of a skill have the same folder name and the same content.
 | Skill | What it's for | Stack |
 | ----- | ------------- | ----- |
 | [`readme-docs`](#readme-docs) | Create a project's README.md, or update it after code changes | Agnostic |
+| [`review-changes`](#review-changes) | Review code changes before a commit or a pull request, with a prioritized report and recommendations | Agnostic |
 
 ### readme-docs
 
@@ -65,6 +67,57 @@ Creates and maintains a project's `README.md` following a documentation standard
 **Tested**
 
 - Claude Code: tested on an iOS app project (Xcode), where it produced complete documentation.
+- OpenAI Codex and GitHub Copilot: not tested yet.
+
+### review-changes
+
+Reviews code changes before a commit or a pull request to catch the problems that matter before they reach production: functional defects, regressions, security risks, data integrity issues, design and structural problems, and departures from the project's standards. It aims for relevant findings backed by evidence, not for the longest list. It writes a prioritized report with a recommendation for each finding, can apply the fixes you approve, and can re-review the branch to check them.
+
+**When to use it**
+
+- Before committing, to review what you haven't committed yet.
+- Before opening a pull request, to review the whole branch.
+- To review someone else's pull request.
+- After fixing the findings, to check that they're fixed and that nothing new came up.
+
+**How to use it**
+
+- Ask for it: _"Review my changes"_, _"Review this branch before the PR"_, _"Review PR 42"_.
+- To narrow the scope: _"Review only what I haven't committed"_, _"Review the last commit"_.
+- To force a mode: _"Do a quick review"_, _"Do a deep review"_.
+- After the report: _"Fix F1 and F3"_, _"Apply the P0 and P1 fixes"_.
+- To check the fixes: _"Review again"_.
+
+**How it works**
+
+- By default it reviews everything that would go into the pull request: the branch's commits since it left its base branch, plus uncommitted changes. For pull requests it uses `gh` or `glab` if they're installed; otherwise it fetches the branch with `git`.
+- First it discovers the project's standards (`README`, `AGENTS.md`, `CLAUDE.md`, scaffold, architecture rules, linters, contracts), so it judges the change against them and not against outside conventions. It applies SOLID, DDD and patterns only where they add value.
+- The size and risk of the change decide how much it does, so a small fix before a commit stays fast:
+  - **Quick** (small change, no sensitive area): basic checklist, fast checks (lint, format, types) and a short report.
+  - **Standard** (larger change, or one that touches a sensitive area such as authentication, data, public contracts or configuration): it adds the checklist sections for the areas the change touches and the related tests.
+  - **Deep** (critical systems, sensitive data, financial operations, security): all of the above plus threat and failure analysis, the full test suite and the build.
+- The checklist has 12 areas, from design and architecture to deployment and the scope of the change. It reads only the sections for the areas the change touches.
+- It runs the project's own validations, without anything that modifies files, installs dependencies or touches data, and asks first if they're slow or need external services. The report says what ran, what failed and what couldn't run.
+- It checks each finding against seven questions before reporting it, to avoid false positives. Each one has a priority (🔴 P0, 🟠 P1, 🟡 P2, 🔵 P3 or 💡 Info, or the project's own scale), a type (confirmed defect or potential risk), an origin (introduced or pre-existing), and the conditions, impact, evidence and recommendation. P3 and Info findings take a single line. The review gets a verdict: ✅ Ready, ⚠️ Ready with changes or ❌ Needs work. It never claims the code is bug-free.
+- It saves the report to `.reviews/<branch>/review-<n>.md`, one file per round (`review-1.md`, `review-2.md`, ...). The header records the date, the branch, the base and the reviewed commit. It keeps reports out of commits and pushes: the first time, it adds `.reviews/` to the project's `.gitignore` and reminds you to commit that change.
+- It never changes code during the review. At the end it offers to apply the fixes, and applies only the ones you approve, without committing.
+- A re-review reads the previous round's report, marks each earlier finding as fixed, partially fixed, still open or no longer applicable, and reviews the fixes and any new changes. It reuses the standards the previous round found instead of searching for them again.
+
+**Files**
+
+- `SKILL.md`: the workflow: scope, context, review mode, review, validations, verification, report, fixes and re-review.
+- `references/checklist.md`: the priority scale, the verdicts, the depth levels used by each mode and what to look for in each of the 12 areas.
+- `references/report-template.md`: the report's structure, its size in each mode, and the full and compact finding formats.
+
+**Requirements and limitations**
+
+- The project must use `git`.
+- Reviewing a pull request by number works best with `gh` (GitHub) or `glab` (GitLab) installed and signed in.
+- It can only run the validations the project already defines and the environment supports. What it couldn't run is listed in the report as not verified.
+
+**Tested**
+
+- Claude Code: tested on an iOS app project (Xcode, about 11,000 lines of Swift), reviewing the whole project in Deep mode. It ran the tests and the Release build, applied the project's own rules and reported relevant findings with evidence, without noise.
 - OpenAI Codex and GitHub Copilot: not tested yet.
 
 ## Repository structure
@@ -250,4 +303,4 @@ Contributions are welcome: fixes, improvements to existing skills and new skills
 
 Released under the [MIT License](LICENSE). You can use, copy, modify and share the skills, including in commercial projects, as long as you keep the copyright notice.
 
-<!-- readme-docs:sync commit=3f6d9a3 date=2026-10-29 -->
+<!-- readme-docs:sync commit=22b20d0 date=2026-10-29 -->

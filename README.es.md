@@ -19,6 +19,7 @@ Las dos versiones de una skill tienen el mismo nombre de carpeta y el mismo cont
 
 - [Skills](#skills)
   - [readme-docs](#readme-docs)
+  - [review-changes](#review-changes)
 - [Estructura del repositorio](#estructura-del-repositorio)
 - [Instalación](#instalación)
 - [Uso](#uso)
@@ -31,6 +32,7 @@ Las dos versiones de una skill tienen el mismo nombre de carpeta y el mismo cont
 | Skill | Para qué sirve | Stack |
 | ----- | -------------- | ----- |
 | [`readme-docs`](#readme-docs) | Crear el README.md de un proyecto o actualizarlo después de cambios en el código | Agnóstica |
+| [`review-changes`](#review-changes) | Revisar cambios de código antes de un commit o de un pull request, con un informe priorizado y recomendaciones | Agnóstica |
 
 ### readme-docs
 
@@ -65,6 +67,57 @@ Crea y mantiene el `README.md` de un proyecto siguiendo un estándar de document
 **Probada**
 
 - Claude Code: probada en un proyecto de app de iOS (Xcode), donde generó una documentación completa.
+- OpenAI Codex y GitHub Copilot: todavía sin probar.
+
+### review-changes
+
+Revisa cambios de código antes de un commit o de un pull request para detectar los problemas que importan antes de que lleguen a producción: defectos funcionales, regresiones, riesgos de seguridad, problemas de integridad de datos, problemas de diseño y de estructura, y desviaciones de los estándares del proyecto. Busca hallazgos relevantes y con evidencia, no la lista más larga. Escribe un informe priorizado con una recomendación para cada hallazgo, puede aplicar las correcciones que apruebes y puede volver a revisar la rama para comprobarlas.
+
+**Cuándo usarla**
+
+- Antes de hacer commit, para revisar lo que todavía no has commiteado.
+- Antes de abrir un pull request, para revisar la rama completa.
+- Para revisar el pull request de otra persona.
+- Después de corregir los hallazgos, para comprobar que quedaron corregidos y que no apareció nada nuevo.
+
+**Cómo usarla**
+
+- Pídelo: _"Revisa mis cambios"_, _"Revisa esta rama antes del PR"_, _"Revisa el PR 42"_.
+- Para acotar el alcance: _"Revisa solo lo que no he commiteado"_, _"Revisa el último commit"_.
+- Para forzar un modo: _"Haz una revisión rápida"_, _"Haz una revisión profunda"_.
+- Después del informe: _"Corrige F1 y F3"_, _"Aplica las correcciones P0 y P1"_.
+- Para comprobar las correcciones: _"Revisa otra vez"_.
+
+**Cómo funciona**
+
+- Por defecto revisa todo lo que entraría en el pull request: los commits de la rama desde que salió de su rama base, más los cambios sin commit. Para los pull requests usa `gh` o `glab` si están instalados; si no, trae la rama con `git`.
+- Primero descubre los estándares del proyecto (`README`, `AGENTS.md`, `CLAUDE.md`, scaffold, reglas de arquitectura, linters, contratos), para juzgar el cambio con ellos y no con convenciones externas. Aplica SOLID, DDD y patrones solo donde aportan valor.
+- El tamaño y el riesgo del cambio deciden cuánto hace, así que una corrección pequeña antes de un commit sigue siendo rápida:
+  - **Rápida** (cambio pequeño, sin áreas sensibles): checklist básica, comprobaciones rápidas (lint, formato, tipos) e informe corto.
+  - **Estándar** (cambio más grande, o uno que toca un área sensible como autenticación, datos, contratos públicos o configuración): añade los apartados de la checklist de las áreas que toca el cambio y las pruebas relacionadas.
+  - **Profunda** (sistemas críticos, datos sensibles, operaciones financieras, seguridad): todo lo anterior más el análisis de amenazas y de fallos, la suite completa de pruebas y la compilación.
+- La checklist tiene 12 áreas, desde el diseño y la arquitectura hasta el despliegue y el alcance del cambio. Solo lee los apartados de las áreas que toca el cambio.
+- Ejecuta las validaciones del propio proyecto, sin nada que modifique archivos, instale dependencias o toque datos, y pregunta antes si son lentas o necesitan servicios externos. El informe dice qué se ejecutó, qué falló y qué no se pudo ejecutar.
+- Comprueba cada hallazgo con siete preguntas antes de reportarlo, para evitar falsos positivos. Cada uno tiene una prioridad (🔴 P0, 🟠 P1, 🟡 P2, 🔵 P3 o 💡 Info, o la escala propia del proyecto), un tipo (defecto confirmado o riesgo potencial), un origen (introducido o preexistente), y las condiciones, el impacto, la evidencia y la recomendación. Los hallazgos P3 e Info ocupan una sola línea. La revisión recibe un veredicto: ✅ Listo, ⚠️ Listo con cambios o ❌ Necesita trabajo. Nunca afirma que el código está libre de errores.
+- Guarda el informe en `.reviews/<rama>/review-<n>.md`, un archivo por ronda (`review-1.md`, `review-2.md`, ...). La cabecera registra la fecha, la rama, la base y el commit revisado. Deja los informes fuera de los commits y de los push: la primera vez añade `.reviews/` al `.gitignore` del proyecto y te recuerda que hagas commit de ese cambio.
+- Nunca cambia el código durante la revisión. Al final ofrece aplicar las correcciones y aplica solo las que apruebes, sin hacer commit.
+- Una nueva ronda lee el informe de la ronda anterior, marca cada hallazgo anterior como corregido, corregido en parte, abierto o que ya no aplica, y revisa las correcciones y los cambios nuevos. Reutiliza los estándares que encontró la ronda anterior en lugar de buscarlos otra vez.
+
+**Archivos**
+
+- `SKILL.md`: el flujo de trabajo: alcance, contexto, modo de revisión, revisión, validaciones, verificación, informe, correcciones y nueva ronda.
+- `references/checklist.md`: la escala de prioridad, los veredictos, los niveles de profundidad que usa cada modo y qué buscar en cada una de las 12 áreas.
+- `references/report-template.md`: la estructura del informe, su tamaño en cada modo, y los formatos completo y compacto de los hallazgos.
+
+**Requisitos y limitaciones**
+
+- El proyecto debe usar `git`.
+- Revisar un pull request por número funciona mejor con `gh` (GitHub) o `glab` (GitLab) instalado y con la sesión iniciada.
+- Solo puede ejecutar las validaciones que el proyecto ya define y que el entorno permite. Lo que no pudo ejecutar aparece en el informe como no verificado.
+
+**Probada**
+
+- Claude Code: probada en un proyecto de app de iOS (Xcode, unas 11.000 líneas de Swift), revisando el proyecto completo en modo Profunda. Ejecutó las pruebas y la compilación de Release, aplicó las reglas propias del proyecto y reportó hallazgos relevantes con evidencia, sin ruido.
 - OpenAI Codex y GitHub Copilot: todavía sin probar.
 
 ## Estructura del repositorio
@@ -250,4 +303,4 @@ Las contribuciones son bienvenidas: correcciones, mejoras de skills existentes y
 
 Publicado bajo la [licencia MIT](LICENSE). Puedes usar, copiar, modificar y compartir las skills, también en proyectos comerciales, siempre que mantengas el aviso de copyright.
 
-<!-- readme-docs:sync commit=3f6d9a3 date=2026-10-29 -->
+<!-- readme-docs:sync commit=22b20d0 date=2026-10-29 -->
