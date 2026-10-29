@@ -25,6 +25,7 @@ Estructura del análisis de impacto. Úsala para la respuesta en la conversació
 |---|---|
 | **Fecha** | <AAAA-MM-DD> |
 | **Proyecto** | <nombre del repositorio o del servicio> |
+| **Componentes** | <en un monorepo, los componentes que toca el cambio> |
 | **Commit analizado** | `<sha corto>` en `<rama>` <+ cambios sin commit, si los hay> |
 | **Modo** | <Rápido | Profundo: por qué> |
 | **Petición** | <el cambio tal como lo describió el usuario> |

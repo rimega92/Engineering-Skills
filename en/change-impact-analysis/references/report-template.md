@@ -25,6 +25,7 @@ Structure of the impact analysis. Use it for the answer in the conversation and,
 |---|---|
 | **Date** | <YYYY-MM-DD> |
 | **Project** | <repository or service name> |
+| **Components** | <in a monorepo, the components the change touches> |
 | **Analyzed commit** | `<short sha>` on `<branch>` <+ uncommitted changes, if any> |
 | **Mode** | <Quick | Deep: why> |
 | **Request** | <the change as the user described it> |

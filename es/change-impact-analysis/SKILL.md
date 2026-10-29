@@ -122,10 +122,11 @@ Al final, ofrece los siguientes pasos:
 
 ## 8. Guardar el análisis (si el usuario lo pide)
 
-**Ubicación:** `.impact/<cambio>.md` en la carpeta del proyecto al que va el cambio:
+**Ubicación:** `.impact/<cambio>.md`, en esta carpeta:
 
 - **Repositorio de un solo proyecto:** la raíz del repositorio.
-- **Monorepo:** la carpeta del microservicio, la app o el paquete que el cambio modifica (por ejemplo, `services/orders/.impact/`), no la raíz del repositorio. Si el cambio abarca varios, usa la carpeta del principal y menciona los demás en el análisis; si ninguno es claramente el principal, pregunta.
+- **Monorepo, cambio en un solo componente:** la carpeta raíz de ese microservicio, app o paquete (por ejemplo, `services/orders/.impact/`).
+- **Monorepo, cambio en varios componentes:** la raíz del repositorio. Lista en la cabecera del análisis los componentes afectados.
 - **Sin git:** la carpeta raíz del proyecto.
 
 A partir de aquí, `<carpeta>` es esa carpeta.

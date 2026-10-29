@@ -122,10 +122,11 @@ At the end, offer the next steps:
 
 ## 8. Save the analysis (if the user wants it)
 
-**Location:** `.impact/<change>.md` in the folder of the project the change targets:
+**Location:** `.impact/<change>.md`, in this folder:
 
 - **Single-project repository:** the root of the repository.
-- **Monorepo:** the folder of the microservice, app or package the change modifies (for example, `services/orders/.impact/`), not the root of the repository. If the change spans several of them, use the folder of the main one and mention the others in the analysis; if none is clearly the main one, ask.
+- **Monorepo, change in one component:** the root folder of that microservice, app or package (for example, `services/orders/.impact/`).
+- **Monorepo, change in several components:** the root of the repository. List the affected components in the analysis's header.
 - **Without git:** the project's root folder.
 
 From here on, `<folder>` is that folder.
