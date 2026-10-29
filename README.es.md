@@ -1,4 +1,4 @@
-# Rimega Skills
+# Engineering Skills
 
 [🇬🇧 English](README.md) · 🇪🇸 Español
 
@@ -64,7 +64,7 @@ Una skill es una carpeta que contiene un archivo `SKILL.md`. Para instalar una, 
 Primero, clona el repositorio:
 
 ```bash
-git clone https://github.com/rimega92/Rimega-Skills.git
+git clone https://github.com/rimega92/Engineering-Skills.git
 ```
 
 Después, copia la skill para tu herramienta.
@@ -73,30 +73,30 @@ Después, copia la skill para tu herramienta.
 
 ```bash
 # Instalación personal
-cp -r Rimega-Skills/es/<nombre-skill> ~/.claude/skills/
+cp -r Engineering-Skills/es/<nombre-skill> ~/.claude/skills/
 
 # Instalación en un solo proyecto
-cp -r Rimega-Skills/es/<nombre-skill> /ruta/al/proyecto/.claude/skills/
+cp -r Engineering-Skills/es/<nombre-skill> /ruta/al/proyecto/.claude/skills/
 ```
 
 ### Instalar en OpenAI Codex
 
 ```bash
 # Instalación personal
-cp -r Rimega-Skills/es/<nombre-skill> ~/.codex/skills/
+cp -r Engineering-Skills/es/<nombre-skill> ~/.codex/skills/
 
 # Instalación en un solo proyecto
-cp -r Rimega-Skills/es/<nombre-skill> /ruta/al/proyecto/.agents/skills/
+cp -r Engineering-Skills/es/<nombre-skill> /ruta/al/proyecto/.agents/skills/
 ```
 
 ### Instalar en GitHub Copilot
 
 ```bash
 # Instalación personal
-cp -r Rimega-Skills/es/<nombre-skill> ~/.copilot/skills/
+cp -r Engineering-Skills/es/<nombre-skill> ~/.copilot/skills/
 
 # Instalación en un solo proyecto
-cp -r Rimega-Skills/es/<nombre-skill> /ruta/al/proyecto/.github/skills/
+cp -r Engineering-Skills/es/<nombre-skill> /ruta/al/proyecto/.github/skills/
 ```
 
 Si la carpeta de destino todavía no existe, créala antes con `mkdir -p`. Para la versión en inglés, cambia `es/` por `en/`.
@@ -154,7 +154,7 @@ Las contribuciones son bienvenidas: correcciones, mejoras de skills existentes y
 
 ### Antes de empezar
 
-- **Skill nueva:** abre primero un [issue](https://github.com/rimega92/Rimega-Skills/issues) explicando para qué sirve, para acordarla antes de que le dediques trabajo.
+- **Skill nueva:** abre primero un [issue](https://github.com/rimega92/Engineering-Skills/issues) explicando para qué sirve, para acordarla antes de que le dediques trabajo.
 - **Corrección o mejora:** puedes abrir el pull request directamente. Si el cambio es grande, conviene abrir antes un issue.
 
 ### Flujo de trabajo
@@ -163,9 +163,9 @@ Las contribuciones son bienvenidas: correcciones, mejoras de skills existentes y
 2. Clona tu fork y añade el repositorio original como `upstream`:
 
    ```bash
-   git clone https://github.com/<tu-usuario>/Rimega-Skills.git
-   cd Rimega-Skills
-   git remote add upstream https://github.com/rimega92/Rimega-Skills.git
+   git clone https://github.com/<tu-usuario>/Engineering-Skills.git
+   cd Engineering-Skills
+   git remote add upstream https://github.com/rimega92/Engineering-Skills.git
    ```
 
 3. Crea una rama a partir de `main` actualizada. Usa un nombre corto con un prefijo que indique el tipo de cambio: `feat/` (skill o funcionalidad nueva), `fix/` (corrección) o `docs/` (solo documentación).

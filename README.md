@@ -1,4 +1,4 @@
-# Rimega Skills
+# Engineering Skills
 
 🇬🇧 English · [🇪🇸 Español](README.es.md)
 
@@ -64,7 +64,7 @@ A skill is a folder that contains a `SKILL.md` file. To install one, copy its fo
 First, clone the repository:
 
 ```bash
-git clone https://github.com/rimega92/Rimega-Skills.git
+git clone https://github.com/rimega92/Engineering-Skills.git
 ```
 
 Then copy the skill for your tool.
@@ -73,30 +73,30 @@ Then copy the skill for your tool.
 
 ```bash
 # Personal install
-cp -r Rimega-Skills/en/<skill-name> ~/.claude/skills/
+cp -r Engineering-Skills/en/<skill-name> ~/.claude/skills/
 
 # Single-project install
-cp -r Rimega-Skills/en/<skill-name> /path/to/project/.claude/skills/
+cp -r Engineering-Skills/en/<skill-name> /path/to/project/.claude/skills/
 ```
 
 ### Install in OpenAI Codex
 
 ```bash
 # Personal install
-cp -r Rimega-Skills/en/<skill-name> ~/.codex/skills/
+cp -r Engineering-Skills/en/<skill-name> ~/.codex/skills/
 
 # Single-project install
-cp -r Rimega-Skills/en/<skill-name> /path/to/project/.agents/skills/
+cp -r Engineering-Skills/en/<skill-name> /path/to/project/.agents/skills/
 ```
 
 ### Install in GitHub Copilot
 
 ```bash
 # Personal install
-cp -r Rimega-Skills/en/<skill-name> ~/.copilot/skills/
+cp -r Engineering-Skills/en/<skill-name> ~/.copilot/skills/
 
 # Single-project install
-cp -r Rimega-Skills/en/<skill-name> /path/to/project/.github/skills/
+cp -r Engineering-Skills/en/<skill-name> /path/to/project/.github/skills/
 ```
 
 If the destination folder doesn't exist yet, create it first with `mkdir -p`. For the Spanish version, replace `en/` with `es/`.
@@ -154,7 +154,7 @@ Contributions are welcome: fixes, improvements to existing skills and new skills
 
 ### Before you start
 
-- **New skill:** open an [issue](https://github.com/rimega92/Rimega-Skills/issues) first describing what it's for, so we can agree on it before you put work into it.
+- **New skill:** open an [issue](https://github.com/rimega92/Engineering-Skills/issues) first describing what it's for, so we can agree on it before you put work into it.
 - **Fix or improvement:** you can open the pull request directly. For bigger changes, an issue first is still a good idea.
 
 ### Workflow
@@ -163,9 +163,9 @@ Contributions are welcome: fixes, improvements to existing skills and new skills
 2. Clone your fork and add the original repository as `upstream`:
 
    ```bash
-   git clone https://github.com/<your-user>/Rimega-Skills.git
-   cd Rimega-Skills
-   git remote add upstream https://github.com/rimega92/Rimega-Skills.git
+   git clone https://github.com/<your-user>/Engineering-Skills.git
+   cd Engineering-Skills
+   git remote add upstream https://github.com/rimega92/Engineering-Skills.git
    ```
 
 3. Create a branch from an up-to-date `main`. Use a short name with a prefix that says what kind of change it is: `feat/` (new skill or feature), `fix/` (bug fix) or `docs/` (documentation only).
