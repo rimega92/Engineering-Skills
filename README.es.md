@@ -117,7 +117,8 @@ Revisa cambios de código antes de un commit o de un pull request para detectar 
 
 **Probada**
 
-- Todavía sin probar.
+- Claude Code: probada en un proyecto de app de iOS (Xcode, unas 11.000 líneas de Swift), revisando el proyecto completo en modo Profunda. Ejecutó las pruebas y la compilación de Release, aplicó las reglas propias del proyecto y reportó hallazgos relevantes con evidencia, sin ruido.
+- OpenAI Codex y GitHub Copilot: todavía sin probar.
 
 ## Estructura del repositorio
 

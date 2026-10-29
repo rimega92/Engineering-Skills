@@ -117,7 +117,8 @@ Reviews code changes before a commit or a pull request to catch the problems tha
 
 **Tested**
 
-- Not tested yet.
+- Claude Code: tested on an iOS app project (Xcode, about 11,000 lines of Swift), reviewing the whole project in Deep mode. It ran the tests and the Release build, applied the project's own rules and reported relevant findings with evidence, without noise.
+- OpenAI Codex and GitHub Copilot: not tested yet.
 
 ## Repository structure
 
