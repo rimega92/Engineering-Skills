@@ -68,7 +68,7 @@ git clone https://github.com/rimega92/Rimega-Skills.git
 
 Then copy the skill for your tool.
 
-### Claude Code
+### Install in Claude Code
 
 ```bash
 # Personal install
@@ -78,7 +78,7 @@ cp -r Rimega-Skills/en/<skill-name> ~/.claude/skills/
 cp -r Rimega-Skills/en/<skill-name> /path/to/project/.claude/skills/
 ```
 
-### OpenAI Codex
+### Install in OpenAI Codex
 
 ```bash
 # Personal install
@@ -88,7 +88,7 @@ cp -r Rimega-Skills/en/<skill-name> ~/.codex/skills/
 cp -r Rimega-Skills/en/<skill-name> /path/to/project/.agents/skills/
 ```
 
-### GitHub Copilot
+### Install in GitHub Copilot
 
 ```bash
 # Personal install
@@ -104,4 +104,45 @@ Install only one language version of each skill. Both versions share the same `n
 
 ## Usage
 
-The agent triggers a skill on its own when your request matches the skill's `description`, so in most cases you just ask for what you need. Each tool also has its own way to invoke a skill explicitly; in Claude Code, for example, you type `/<skill-name>`.
+There are two ways to use a skill:
+
+- **Automatically:** the agent triggers the skill on its own when your request matches the skill's `description`. In most cases you just ask for what you need.
+- **Explicitly:** you name the skill, using your tool's syntax. Useful when the agent doesn't pick the skill on its own, or when you want to be sure it uses it.
+
+The examples below use the `readme-docs` skill.
+
+### Use in Claude Code
+
+```text
+# Automatically
+Update the README with the latest changes
+
+# Explicitly
+/readme-docs
+/readme-docs update the README with the latest changes
+```
+
+### Use in OpenAI Codex
+
+```text
+# Automatically
+Update the README with the latest changes
+
+# Explicitly
+$readme-docs update the README with the latest changes
+```
+
+In the Codex CLI and IDE extension, you can also run `/skills` to pick a skill from a list.
+
+### Use in GitHub Copilot
+
+```text
+# Automatically
+Update the README with the latest changes
+
+# Explicitly
+/readme-docs update the README with the latest changes
+Use the /readme-docs skill to update the README with the latest changes
+```
+
+In VS Code, type `/` in the chat to see the available skills. In Copilot CLI, include `/<skill-name>` in your prompt, as in the second example.
