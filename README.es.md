@@ -2,7 +2,7 @@
 
 [🇬🇧 English](README.md) · 🇪🇸 Español
 
-Una colección de skills para [Claude Code](https://claude.com/claude-code) que puedes reutilizar en distintos proyectos. La mayoría de las skills no dependen de una tecnología ni de un lenguaje de programación concretos, así que sirven para frontend, backend, apps móviles y otros tipos de trabajo. Cuando una skill sí está pensada para un lenguaje o stack específico, su fila en la tabla de abajo lo indica.
+Una colección de skills para agentes de IA, compatibles con [Claude Code](https://claude.com/claude-code), [OpenAI Codex](https://developers.openai.com/codex) y [GitHub Copilot](https://github.com/features/copilot), que puedes reutilizar en distintos proyectos. Las skills siguen el formato abierto [Agent Skills](https://agentskills.io/), así que la misma skill funciona en las tres herramientas. La mayoría de las skills no dependen de una tecnología ni de un lenguaje de programación concretos, así que sirven para frontend, backend, apps móviles y otros tipos de trabajo. Cuando una skill sí está pensada para un lenguaje o stack específico, su fila en la tabla de abajo lo indica.
 
 Cada skill está disponible en dos idiomas:
 
@@ -33,9 +33,8 @@ Crea y mantiene el `README.md` de un proyecto siguiendo un estándar de document
 - Para actualizar el README después de cambiar el código: nuevas dependencias, endpoints, variables de entorno, servicios, etc.
 
 **Cómo usarla**
-- `/readme-docs`: elige el modo sola. Usa el modo crear si no hay un README con contenido real, y el modo actualizar si lo hay.
-- `/readme-docs crear` o `/readme-docs actualizar`: fuerza un modo.
-- O simplemente pídelo: _"Documenta este proyecto"_, _"Actualiza el README con los últimos cambios"_.
+- Pídelo: _"Documenta este proyecto"_, _"Actualiza el README con los últimos cambios"_.
+- Elige el modo sola: el modo crear si no hay un README con contenido real, y el modo actualizar si lo hay. Para forzar un modo, dilo: _"Crea el README desde cero"_, _"Actualiza el README"_.
 
 **Cómo funciona**
 - Deduce todo lo que puede del proyecto (manifiestos, scripts, configuración, Docker, CI, pruebas, código). Para los datos que solo conoce el equipo, como el estado, los responsables o el porqué de las decisiones, te hace todas las preguntas en un solo mensaje. Lo que dejes sin responder queda como un marcador visible de `Pendiente`.
@@ -53,10 +52,15 @@ Crea y mantiene el `README.md` de un proyecto siguiendo un estándar de document
 
 ## Instalación
 
-Una skill es una carpeta que contiene un archivo `SKILL.md`. Para instalar una, copia su carpeta, en el idioma que prefieras, a una de estas ubicaciones:
+Una skill es una carpeta que contiene un archivo `SKILL.md`. Para instalar una, copia su carpeta, en el idioma que prefieras, a la carpeta de skills de tu herramienta:
 
-- **Todos tus proyectos (personal):** `~/.claude/skills/`
-- **Un solo proyecto:** `.claude/skills/` dentro de ese proyecto
+| Herramienta | Un solo proyecto | Todos tus proyectos (personal) |
+|-------------|------------------|--------------------------------|
+| Claude Code | `.claude/skills/` | `~/.claude/skills/` |
+| OpenAI Codex | `.agents/skills/` | `~/.codex/skills/` |
+| GitHub Copilot | `.github/skills/` | `~/.copilot/skills/` |
+
+Por ejemplo, con Claude Code:
 
 ```bash
 git clone https://github.com/rimega92/Rimega-Skills.git
@@ -68,10 +72,10 @@ cp -r Rimega-Skills/es/<nombre-skill> ~/.claude/skills/
 cp -r Rimega-Skills/es/<nombre-skill> /ruta/al/proyecto/.claude/skills/
 ```
 
-Para la versión en inglés, cambia `es/` por `en/`.
+Para otra herramienta, cambia el destino por su carpeta de la tabla. Para la versión en inglés, cambia `es/` por `en/`.
 
 Instala solo una versión de idioma de cada skill. Las dos versiones comparten el mismo `name`, así que instalar ambas provoca un conflicto.
 
 ## Uso
 
-Claude Code activa una skill por su cuenta cuando tu petición coincide con la `description` de la skill. También puedes invocarla directamente escribiendo `/<nombre-skill>`.
+El agente activa una skill por su cuenta cuando tu petición coincide con la `description` de la skill, así que en la mayoría de los casos basta con pedir lo que necesitas. Cada herramienta tiene además su propia forma de invocar una skill directamente; en Claude Code, por ejemplo, escribes `/<nombre-skill>`.

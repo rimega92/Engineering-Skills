@@ -2,7 +2,7 @@
 
 🇬🇧 English · [🇪🇸 Español](README.es.md)
 
-A collection of [Claude Code](https://claude.com/claude-code) skills that you can reuse across projects. Most skills don't depend on a particular technology or programming language, so they work for frontend, backend, mobile and other kinds of work. When a skill does target a specific language or stack, its entry below says so.
+A collection of agent skills for [Claude Code](https://claude.com/claude-code), [OpenAI Codex](https://developers.openai.com/codex) and [GitHub Copilot](https://github.com/features/copilot) that you can reuse across projects. The skills follow the open [Agent Skills](https://agentskills.io/) format, so the same skill works in all three tools. Most skills don't depend on a particular technology or programming language, so they work for frontend, backend, mobile and other kinds of work. When a skill does target a specific language or stack, its entry below says so.
 
 Every skill comes in two languages:
 
@@ -33,9 +33,8 @@ Creates and maintains a project's `README.md` following a documentation standard
 - To update the README after changing the code: new dependencies, endpoints, environment variables, services, and so on.
 
 **How to use it**
-- `/readme-docs`: picks the mode on its own. It uses create mode if there's no README with real content, and update mode otherwise.
-- `/readme-docs create` or `/readme-docs update`: forces a mode.
-- Or just ask: _"Document this project"_, _"Update the README with the latest changes"_.
+- Ask for it: _"Document this project"_, _"Update the README with the latest changes"_.
+- It picks the mode on its own: create mode if there's no README with real content, update mode otherwise. To force a mode, say so: _"Create the README from scratch"_, _"Update the README"_.
 
 **How it works**
 - It infers everything it can from the project (manifests, scripts, configuration, Docker, CI, tests, code). For facts only the team knows, such as status, owners or the reasons behind decisions, it asks you all its questions in a single message. Anything you leave unanswered becomes a visible `Pending` marker.
@@ -53,10 +52,15 @@ Creates and maintains a project's `README.md` following a documentation standard
 
 ## Installation
 
-A skill is a folder that contains a `SKILL.md` file. To install one, copy its folder from the language you want into one of these locations:
+A skill is a folder that contains a `SKILL.md` file. To install one, copy its folder from the language you want into your tool's skills folder:
 
-- **Every project (personal):** `~/.claude/skills/`
-- **One project:** `.claude/skills/` inside that project
+| Tool | One project | Every project (personal) |
+|------|-------------|--------------------------|
+| Claude Code | `.claude/skills/` | `~/.claude/skills/` |
+| OpenAI Codex | `.agents/skills/` | `~/.codex/skills/` |
+| GitHub Copilot | `.github/skills/` | `~/.copilot/skills/` |
+
+For example, with Claude Code:
 
 ```bash
 git clone https://github.com/rimega92/Rimega-Skills.git
@@ -68,10 +72,10 @@ cp -r Rimega-Skills/en/<skill-name> ~/.claude/skills/
 cp -r Rimega-Skills/en/<skill-name> /path/to/project/.claude/skills/
 ```
 
-For the Spanish version, replace `en/` with `es/`.
+For another tool, replace the destination with its folder from the table. For the Spanish version, replace `en/` with `es/`.
 
 Install only one language version of each skill. Both versions share the same `name`, so installing both causes a conflict.
 
 ## Usage
 
-Claude Code triggers a skill on its own when your request matches the skill's `description`. You can also invoke a skill directly by typing `/<skill-name>`.
+The agent triggers a skill on its own when your request matches the skill's `description`, so in most cases you just ask for what you need. Each tool also has its own way to invoke a skill explicitly; in Claude Code, for example, you type `/<skill-name>`.

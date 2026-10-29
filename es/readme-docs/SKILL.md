@@ -12,7 +12,7 @@ Tiene dos modos:
 - **Crear:** el proyecto no tiene README o tiene uno mínimo (solo el título o el texto que genera una plantilla). Se escribe completo.
 - **Actualizar:** ya existe un README con contenido real. Solo se modifican los apartados afectados por los cambios del código.
 
-Si el usuario indica el modo (`/readme-docs crear` o `/readme-docs actualizar`), úsalo. Si no, elige según el estado del README.
+Si el usuario indica el modo (por ejemplo, "crea el README desde cero" o "actualiza el README"), úsalo. Si no, elige según el estado del README.
 
 ## Principios
 
