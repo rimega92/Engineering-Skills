@@ -21,6 +21,7 @@ Both versions of a skill have the same folder name and the same content.
   - [readme-docs](#readme-docs)
   - [review-changes](#review-changes)
   - [change-impact-analysis](#change-impact-analysis)
+  - [refine-user-story](#refine-user-story)
 - [Repository structure](#repository-structure)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -35,6 +36,7 @@ Both versions of a skill have the same folder name and the same content.
 | [`readme-docs`](#readme-docs) | Create a project's README.md, or update it after code changes | Agnostic |
 | [`review-changes`](#review-changes) | Review code changes before a commit or a pull request, with a prioritized report and recommendations | Agnostic |
 | [`change-impact-analysis`](#change-impact-analysis) | Analyze what a planned change affects before implementing it, with an assessment, a count of what to modify and an effort estimate | Agnostic |
+| [`refine-user-story`](#refine-user-story) | Check whether a user story is ready to implement, against the code it affects, and turn it into a refined story with testable acceptance criteria | Agnostic |
 
 ### readme-docs
 
@@ -168,6 +170,50 @@ Analyzes a change before you write it: which modules, units, processes, contract
 
 - Claude Code: tested on an iOS app project (Xcode) and on a Java project, with good results.
 - OpenAI Codex and GitHub Copilot: not tested yet.
+
+### refine-user-story
+
+Checks whether a user story is clear and complete enough to implement, comparing it with the code of the frontends, services and APIs it affects. It asks the questions that close the gaps and delivers the refined story: testable acceptance criteria, business rules, out of scope, technical notes, assumptions and open questions. It never changes the code and doesn't estimate effort.
+
+**When to use it**
+
+- Before a refinement session or sprint planning, to bring a story with its gaps and questions already found.
+- When you pick up a story to implement, to check that you can build it without guessing.
+- When the story changes or the open questions get answered, to update the refinement.
+
+**How to use it**
+
+- Share the story and ask: _"Refine this user story: …"_, _"Is PROJ-123 ready for development?"_, _"What's missing from this story?"_.
+- If the story touches components in other repositories, give their local paths: _"The API is in ~/projects/orders-api"_.
+- To update it: _"The PO changed the story, here's the new text: …"_, _"Answers to the open questions of PROJ-123: …"_.
+
+**How it works**
+
+- It restates the story (who, what and why) and separates the need from any solution the story imposes.
+- It explores the code of each affected component to learn what exists today: screens, endpoints, models, validations, permissions, texts and data. It flags where the story contradicts the code (for example, a field the story makes optional but the API requires).
+- It checks twelve areas, from value and scope to acceptance criteria, business rules, edge cases, data, contracts, design, permissions, non-functional requirements, dependencies and testability, and marks each one ✅ clear, ⚠️ ambiguous, ❌ missing or ➖ not applicable. If the story is too big, it proposes how to split it.
+- It asks at most two rounds of questions: up to eight in the first and up to four in a second one, only if the answers raise new doubts. The questions are based on the code, grouped by who should answer them (product, design, technical, another team), marked as blocking or not, and each one comes with a proposed answer. Whatever stays unanswered becomes an assumption or an open question for you to take to the people who decide.
+- It gives a verdict: ✅ Ready, ⚠️ Ready with assumptions or ❌ Not ready. In the conversation it shows the functional part of the refined story, ready to paste into your issue tracker, plus the open questions and a summary of the technical notes.
+- It always saves the result to `.stories/<ID>-<title>.md` in the folder of the project the story targets (in a monorepo, the root of the component it affects, or the root of the repository if it affects several) and tells you the path, both relative to the repository and absolute. The file also keeps the original text and a version history. It keeps stories out of commits and pushes: the first time, it adds `.stories/` to a `.gitignore` and reminds you to commit that change.
+- When you bring a new version of the story or answers to its open questions, it updates the same file: it compares the texts, keeps the decisions that still hold, asks only what's new and bumps the version.
+- If the project has its own story template or Definition of Ready, it uses that as the base.
+- At the end it offers to analyze the story's impact and effort with `change-impact-analysis`, if it's installed.
+
+**Files**
+
+- `SKILL.md`: the workflow: read, explore, diagnose, ask, write, save and update.
+- `references/readiness-checklist.md`: what to check in the story and in the code for each of the twelve areas, with typical questions.
+- `references/story-template.md`: the structure of the refined story and of the saved file.
+
+**Requirements and limitations**
+
+- It only sees the code you can give it access to. Components in repositories it can't read are marked as "to confirm".
+- Business decisions belong to the people who own the story: its proposed answers are assumptions until someone confirms them.
+- Saving works best in a `git` repository; without git, the file goes in the project's root folder and isn't ignored automatically.
+
+**Tested**
+
+- Not tested yet in Claude Code, OpenAI Codex or GitHub Copilot.
 
 ## Repository structure
 

@@ -21,6 +21,7 @@ Las dos versiones de una skill tienen el mismo nombre de carpeta y el mismo cont
   - [readme-docs](#readme-docs)
   - [review-changes](#review-changes)
   - [change-impact-analysis](#change-impact-analysis)
+  - [refine-user-story](#refine-user-story)
 - [Estructura del repositorio](#estructura-del-repositorio)
 - [Instalación](#instalación)
 - [Uso](#uso)
@@ -35,6 +36,7 @@ Las dos versiones de una skill tienen el mismo nombre de carpeta y el mismo cont
 | [`readme-docs`](#readme-docs) | Crear el README.md de un proyecto o actualizarlo después de cambios en el código | Agnóstica |
 | [`review-changes`](#review-changes) | Revisar cambios de código antes de un commit o de un pull request, con un informe priorizado y recomendaciones | Agnóstica |
 | [`change-impact-analysis`](#change-impact-analysis) | Analizar qué afecta un cambio planeado antes de implementarlo, con una valoración, un recuento de lo que hay que modificar y un estimado de esfuerzo | Agnóstica |
+| [`refine-user-story`](#refine-user-story) | Comprobar si una historia de usuario está lista para implementarse, frente al código al que afecta, y convertirla en una historia refinada con criterios de aceptación verificables | Agnóstica |
 
 ### readme-docs
 
@@ -168,6 +170,50 @@ Analiza un cambio antes de escribirlo: qué módulos, unidades, procesos, contra
 
 - Claude Code: probada en un proyecto de app de iOS (Xcode) y en un proyecto en Java, con buenos resultados.
 - OpenAI Codex y GitHub Copilot: todavía sin probar.
+
+### refine-user-story
+
+Comprueba si una historia de usuario es lo bastante clara y completa para implementarla, comparándola con el código de los frontends, servicios y APIs a los que afecta. Hace las preguntas que cierran los huecos y entrega la historia refinada: criterios de aceptación verificables, reglas de negocio, fuera de alcance, notas técnicas, supuestos y preguntas abiertas. Nunca cambia el código y no estima esfuerzo.
+
+**Cuándo usarla**
+
+- Antes de una sesión de refinamiento o de la planificación del sprint, para llevar la historia con sus huecos y preguntas ya encontrados.
+- Cuando coges una historia para implementarla, para comprobar que la puedes construir sin adivinar.
+- Cuando la historia cambia o se responden las preguntas abiertas, para actualizar el refinamiento.
+
+**Cómo usarla**
+
+- Comparte la historia y pide: _"Refina esta historia de usuario: …"_, _"¿Está lista PROJ-123 para desarrollo?"_, _"¿Qué le falta a esta historia?"_.
+- Si la historia toca componentes de otros repositorios, da sus rutas locales: _"El API está en ~/proyectos/orders-api"_.
+- Para actualizarla: _"El PO cambió la historia, este es el texto nuevo: …"_, _"Respuestas a las preguntas abiertas de PROJ-123: …"_.
+
+**Cómo funciona**
+
+- Reformula la historia (quién, qué y para qué) y separa la necesidad de la solución que la historia imponga.
+- Explora el código de cada componente afectado para saber qué existe hoy: pantallas, endpoints, modelos, validaciones, permisos, textos y datos. Señala dónde la historia contradice el código (por ejemplo, un campo que la historia hace opcional pero el API exige).
+- Revisa doce áreas, desde el valor y el alcance hasta los criterios de aceptación, las reglas de negocio, los casos límite, los datos, los contratos, el diseño, los permisos, los requisitos no funcionales, las dependencias y la facilidad de prueba, y marca cada una como ✅ clara, ⚠️ ambigua, ❌ falta o ➖ no aplica. Si la historia es demasiado grande, propone cómo dividirla.
+- Hace dos rondas de preguntas como máximo: hasta ocho en la primera y hasta cuatro en una segunda, solo si las respuestas abren dudas nuevas. Las preguntas se basan en el código, se agrupan por quién debe responderlas (producto, diseño, técnico, otro equipo), se marcan como bloqueantes o no, y cada una trae una respuesta propuesta. Lo que quede sin responder pasa a ser un supuesto o una pregunta abierta para que la lleves a quien decide.
+- Da un veredicto: ✅ Lista, ⚠️ Lista con supuestos o ❌ No lista. En la conversación muestra la parte funcional de la historia refinada, lista para pegar en tu gestor de incidencias, más las preguntas abiertas y un resumen de las notas técnicas.
+- Siempre guarda el resultado en `.stories/<ID>-<título>.md` en la carpeta del proyecto al que va la historia (en un monorepo, la raíz del componente al que afecta, o la raíz del repositorio si afecta a varios) y te dice la ruta, relativa al repositorio y absoluta. El archivo guarda también el texto original y un historial de versiones. Deja las historias fuera de los commits y de los push: la primera vez añade `.stories/` a un `.gitignore` y te recuerda que hagas commit de ese cambio.
+- Cuando traes una nueva versión de la historia o respuestas a sus preguntas abiertas, actualiza el mismo archivo: compara los textos, conserva las decisiones que siguen valiendo, pregunta solo lo nuevo y sube la versión.
+- Si el proyecto tiene su propia plantilla de historia o su Definition of Ready, la usa como base.
+- Al final ofrece analizar el impacto y el esfuerzo de la historia con `change-impact-analysis`, si está instalada.
+
+**Archivos**
+
+- `SKILL.md`: el flujo de trabajo: leer, explorar, diagnosticar, preguntar, escribir, guardar y actualizar.
+- `references/readiness-checklist.md`: qué revisar en la historia y en el código para cada una de las doce áreas, con preguntas típicas.
+- `references/story-template.md`: la estructura de la historia refinada y del archivo guardado.
+
+**Requisitos y limitaciones**
+
+- Solo ve el código al que le puedes dar acceso. Los componentes de repositorios que no puede leer se marcan como "por confirmar".
+- Las decisiones de negocio son de quienes llevan la historia: sus respuestas propuestas son supuestos hasta que alguien las confirme.
+- Guardar funciona mejor en un repositorio `git`; sin git, el archivo va a la carpeta raíz del proyecto y no se ignora automáticamente.
+
+**Probada**
+
+- Todavía sin probar en Claude Code, OpenAI Codex ni GitHub Copilot.
 
 ## Estructura del repositorio
 
