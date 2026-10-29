@@ -17,6 +17,7 @@ Both versions of a skill have the same folder name and the same content.
   - [readme-docs](#readme-docs)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Contributing](#contributing)
 
 ## Skills
 
@@ -146,3 +147,58 @@ Use the /readme-docs skill to update the README with the latest changes
 ```
 
 In VS Code, type `/` in the chat to see the available skills. In Copilot CLI, include `/<skill-name>` in your prompt, as in the second example.
+
+## Contributing
+
+Contributions are welcome: fixes, improvements to existing skills and new skills.
+
+### Before you start
+
+- **New skill:** open an [issue](https://github.com/rimega92/Rimega-Skills/issues) first describing what it's for, so we can agree on it before you put work into it.
+- **Fix or improvement:** you can open the pull request directly. For bigger changes, an issue first is still a good idea.
+
+### Workflow
+
+1. Fork the repository on GitHub (you don't have write access to the original, so your changes go to your copy).
+2. Clone your fork and add the original repository as `upstream`:
+
+   ```bash
+   git clone https://github.com/<your-user>/Rimega-Skills.git
+   cd Rimega-Skills
+   git remote add upstream https://github.com/rimega92/Rimega-Skills.git
+   ```
+
+3. Create a branch from an up-to-date `main`. Use a short name with a prefix that says what kind of change it is: `feat/` (new skill or feature), `fix/` (bug fix) or `docs/` (documentation only).
+
+   ```bash
+   git checkout main
+   git pull upstream main
+   git checkout -b feat/<skill-name>
+   ```
+
+4. Make your changes following the [rules](#rules) below.
+5. Commit with clear messages: in English, in the imperative mood, and with a short first line (for example, `Add commit-message skill` or `Fix typo in readme-docs`). Prefer small commits that each do one thing.
+
+   ```bash
+   git add .
+   git commit -m "Add <skill-name> skill"
+   ```
+
+6. Push the branch to your fork:
+
+   ```bash
+   git push -u origin feat/<skill-name>
+   ```
+
+7. Open a pull request on GitHub against `main` of this repository. In the description, explain what changes and why, and link the issue if there is one.
+8. Respond to review comments by pushing new commits to the same branch; the pull request updates on its own.
+
+### Rules
+
+- **Both languages:** every skill exists in `en/` and `es/` with the same folder name, in English and kebab-case. Any change to one version goes to the other in the same pull request. Translate the text, but keep code, commands and file names identical.
+- **Frontmatter:** each `SKILL.md` starts with `name` (identical to the folder name, lowercase letters, numbers and hyphens, at most 64 characters) and `description` (at most 1024 characters, written in that folder's language, saying what the skill does and when to use it).
+- **Tool-neutral:** write for "the agent". Don't mention a specific tool or rely on its syntax or frontmatter fields, so the skill works in Claude Code, Codex and Copilot alike.
+- **READMEs:** if you add, change or remove a skill, update `README.md` and `README.es.md`: table of contents, skills table and the skill's own section.
+- **Test it:** before opening the pull request, install the skill in at least one tool and check that it triggers and does what it says.
+
+[`AGENTS.md`](AGENTS.md) has the full conventions. If you work with an AI agent, it reads them on its own.

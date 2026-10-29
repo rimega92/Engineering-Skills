@@ -17,6 +17,7 @@ Las dos versiones de una skill tienen el mismo nombre de carpeta y el mismo cont
   - [readme-docs](#readme-docs)
 - [Instalación](#instalación)
 - [Uso](#uso)
+- [Cómo contribuir](#cómo-contribuir)
 
 ## Skills
 
@@ -146,3 +147,58 @@ Usa la skill /readme-docs para actualizar el README con los últimos cambios
 ```
 
 En VS Code, escribe `/` en el chat para ver las skills disponibles. En Copilot CLI, incluye `/<nombre-skill>` dentro de tu petición, como en el segundo ejemplo.
+
+## Cómo contribuir
+
+Las contribuciones son bienvenidas: correcciones, mejoras de skills existentes y skills nuevas.
+
+### Antes de empezar
+
+- **Skill nueva:** abre primero un [issue](https://github.com/rimega92/Rimega-Skills/issues) explicando para qué sirve, para acordarla antes de que le dediques trabajo.
+- **Corrección o mejora:** puedes abrir el pull request directamente. Si el cambio es grande, conviene abrir antes un issue.
+
+### Flujo de trabajo
+
+1. Haz un fork del repositorio en GitHub (no tienes permiso de escritura en el original, así que tus cambios van a tu copia).
+2. Clona tu fork y añade el repositorio original como `upstream`:
+
+   ```bash
+   git clone https://github.com/<tu-usuario>/Rimega-Skills.git
+   cd Rimega-Skills
+   git remote add upstream https://github.com/rimega92/Rimega-Skills.git
+   ```
+
+3. Crea una rama a partir de `main` actualizada. Usa un nombre corto con un prefijo que indique el tipo de cambio: `feat/` (skill o funcionalidad nueva), `fix/` (corrección) o `docs/` (solo documentación).
+
+   ```bash
+   git checkout main
+   git pull upstream main
+   git checkout -b feat/<nombre-skill>
+   ```
+
+4. Haz tus cambios siguiendo las [reglas](#reglas) de abajo.
+5. Haz commits con mensajes claros: en inglés, en imperativo y con una primera línea corta (por ejemplo, `Add commit-message skill` o `Fix typo in readme-docs`). Mejor commits pequeños que hagan una sola cosa cada uno.
+
+   ```bash
+   git add .
+   git commit -m "Add <nombre-skill> skill"
+   ```
+
+6. Sube la rama a tu fork:
+
+   ```bash
+   git push -u origin feat/<nombre-skill>
+   ```
+
+7. Abre un pull request en GitHub contra `main` de este repositorio. En la descripción, explica qué cambia y por qué, y enlaza el issue si lo hay.
+8. Atiende los comentarios de la revisión subiendo nuevos commits a la misma rama; el pull request se actualiza solo.
+
+### Reglas
+
+- **Los dos idiomas:** cada skill existe en `es/` y en `en/` con el mismo nombre de carpeta, en inglés y en kebab-case. Cualquier cambio en una versión se aplica también a la otra en el mismo pull request. Traduce el texto, pero deja idénticos el código, los comandos y los nombres de archivo.
+- **Frontmatter:** cada `SKILL.md` empieza con `name` (idéntico al nombre de la carpeta, con minúsculas, números y guiones, de 64 caracteres como máximo) y `description` (de 1024 caracteres como máximo, en el idioma de esa carpeta, diciendo qué hace la skill y cuándo usarla).
+- **Neutral respecto a la herramienta:** escribe para "el agente". No menciones una herramienta concreta ni dependas de su sintaxis o de sus campos de frontmatter, para que la skill funcione igual en Claude Code, Codex y Copilot.
+- **README:** si añades, cambias o eliminas una skill, actualiza `README.md` y `README.es.md`: el índice, la tabla de skills y la sección propia de la skill.
+- **Pruébala:** antes de abrir el pull request, instala la skill en al menos una herramienta y comprueba que se activa y hace lo que dice.
+
+[`AGENTS.md`](AGENTS.md) recoge todas las convenciones. Si trabajas con un agente de IA, las lee por su cuenta.
