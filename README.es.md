@@ -11,6 +11,13 @@ Cada skill está disponible en dos idiomas:
 
 Las dos versiones de una skill tienen el mismo nombre de carpeta y el mismo contenido.
 
+## Índice
+
+- [Skills](#skills)
+  - [readme-docs](#readme-docs)
+- [Instalación](#instalación)
+- [Uso](#uso)
+
 ## Skills
 
 | Skill | Para qué sirve | Stack |
@@ -52,7 +59,7 @@ Una skill es una carpeta que contiene un archivo `SKILL.md`. Para instalar una, 
 - **Un solo proyecto:** `.claude/skills/` dentro de ese proyecto
 
 ```bash
-git clone https://github.com/<usuario>/Rimega-Skills.git
+git clone https://github.com/rimega92/Rimega-Skills.git
 
 # Instalación personal (versión en español)
 cp -r Rimega-Skills/es/<nombre-skill> ~/.claude/skills/

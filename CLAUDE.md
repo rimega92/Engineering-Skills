@@ -22,6 +22,7 @@ en/<skill-name>/SKILL.md   # English version
 ## README
 
 There are two READMEs: `README.md` (English) and `README.es.md` (Spanish). Whenever a skill is added, changed or removed, update **both** READMEs in the same change:
+- Keep the table of contents current: each skill has an entry nested under "Skills".
 - Keep the skills table current. For each skill, list what it's for and its stack ("Agnostic" or the specific language/technology).
 - Under the table, give each skill its own section covering when to use it, how to invoke it (including example prompts and any arguments), and other relevant details such as requirements, supporting files and limitations.
 
