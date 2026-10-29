@@ -20,6 +20,7 @@ Las dos versiones de una skill tienen el mismo nombre de carpeta y el mismo cont
 - [Skills](#skills)
   - [readme-docs](#readme-docs)
   - [review-changes](#review-changes)
+  - [change-impact-analysis](#change-impact-analysis)
 - [Estructura del repositorio](#estructura-del-repositorio)
 - [Instalación](#instalación)
 - [Uso](#uso)
@@ -33,6 +34,7 @@ Las dos versiones de una skill tienen el mismo nombre de carpeta y el mismo cont
 | ----- | -------------- | ----- |
 | [`readme-docs`](#readme-docs) | Crear el README.md de un proyecto o actualizarlo después de cambios en el código | Agnóstica |
 | [`review-changes`](#review-changes) | Revisar cambios de código antes de un commit o de un pull request, con un informe priorizado y recomendaciones | Agnóstica |
+| [`change-impact-analysis`](#change-impact-analysis) | Analizar qué afecta un cambio planeado antes de implementarlo, con una valoración, un recuento de lo que hay que modificar y un estimado de esfuerzo | Agnóstica |
 
 ### readme-docs
 
@@ -119,6 +121,52 @@ Revisa cambios de código antes de un commit o de un pull request para detectar 
 
 - Claude Code: probada en un proyecto de app de iOS (Xcode, unas 11.000 líneas de Swift), revisando el proyecto completo en modo Profunda. Ejecutó las pruebas y la compilación de Release, aplicó las reglas propias del proyecto y reportó hallazgos relevantes con evidencia, sin ruido. También probada en un microservicio en Java, con los mismos resultados.
 - OpenAI Codex y GitHub Copilot: todavía sin probar.
+
+### change-impact-analysis
+
+Analiza un cambio antes de escribirlo: qué módulos, unidades, procesos, contratos, datos, pruebas, configuración y consumidores puede afectar, directa o indirectamente. Explora el código, te hace las preguntas que deciden qué hay que cambiar de verdad y te da una valoración, un recuento de lo que hay que modificar y un estimado de esfuerzo. Nunca cambia el código.
+
+**Cuándo usarla**
+
+- Antes de empezar una funcionalidad, un refactor, una corrección o una actualización, para saber qué implica y qué tamaño tiene.
+- Para comparar una versión mínima de un cambio con la completa.
+- Para preparar un ticket o una historia: alcance, riesgos, estimado y qué decidir primero.
+
+**Cómo usarla**
+
+- Describe el cambio y pregunta: _"¿Qué implicaría añadir un campo de moneda a los pedidos?"_, _"Analiza el impacto de pasar las notificaciones de pago de REST a eventos"_, _"¿Qué tan difícil es actualizar a Spring Boot 3?"_.
+- Para forzar un modo: _"Haz un análisis de impacto rápido"_, _"Haz un análisis de impacto profundo"_.
+- Después del análisis: _"Guarda el análisis"_, _"Adelante, implementa el alcance mínimo"_.
+
+**Cómo funciona**
+
+- Reformula el cambio y separa el objetivo de la solución propuesta. Si un cambio más pequeño cumple el objetivo, lo dice.
+- Explora el código para encontrar dónde cae el cambio y después te hace hasta seis preguntas en un solo mensaje, basadas en lo que encontró (por ejemplo, qué endpoints deben exponer un campo nuevo o qué pasa con los registros existentes). Cada pregunta trae una respuesta por defecto; lo que no respondas queda como un supuesto visible.
+- El tamaño y el riesgo del cambio deciden hasta dónde llega:
+  - **Rápido** (cambio local, sin contratos, datos ni áreas sensibles): código y pruebas a fondo, una línea para cada dimensión restante, pocas preguntas o ninguna.
+  - **Profundo** (varios módulos, contratos públicos, datos o migraciones, áreas sensibles, o mucha incertidumbre): las diez dimensiones a fondo.
+- Las diez dimensiones son código, procesos y flujos, contratos, datos, pruebas, consumidores, configuración e infraestructura, seguridad, operación y documentación. También busca los usos que el compilador no ve: nombres en cadenas de texto, serialización, rutas, SQL, configuración y scripts.
+- Cada elemento afectado tiene una ubicación (`ruta:línea`), el tipo de impacto (directo o indirecto) y la evidencia que lo une al cambio. Los consumidores fuera del repositorio (otros servicios, versiones antiguas de apps, terceros) aparecen como "por confirmar", con cómo confirmarlos.
+- El resultado llega en la conversación y empieza por un resumen: talla (de XS a XL), un estimado en rango para un desarrollador que conoce el código y tres valoraciones por separado de complejidad, riesgo y confianza. Después da el impacto por área, el recuento de archivos y pruebas a modificar, crear o eliminar, el estimado desglosado por actividad con lo que lo hace crecer, qué revisar antes de empezar, los riesgos, el alcance mínimo frente al completo y un orden de implementación sugerido.
+- Solo ejecuta comandos que no cambian nada (búsquedas, `git log`). No ejecuta las pruebas: las describe.
+- Si se lo pides, guarda el análisis en `.impact/<cambio>.md` en la carpeta del proyecto al que va el cambio (en un monorepo, la raíz del microservicio, la app o el paquete que modifica, o la raíz del repositorio si toca varios) y te dice la ruta, relativa al repositorio y absoluta. Deja los análisis fuera de los commits y de los push: la primera vez añade `.impact/` a un `.gitignore` y te recuerda que hagas commit de ese cambio.
+
+**Archivos**
+
+- `SKILL.md`: el flujo de trabajo: entender, explorar, modo, preguntas, análisis, verificación, entrega y guardado.
+- `references/impact-checklist.md`: cómo buscar y qué mirar en cada una de las diez dimensiones.
+- `references/estimation.md`: las escalas de complejidad, riesgo y confianza, las tallas y cómo construir el estimado.
+- `references/report-template.md`: la estructura del análisis y su tamaño en cada modo.
+
+**Requisitos y limitaciones**
+
+- Solo ve lo que está en el repositorio. Los consumidores y sistemas de fuera se marcan como "por confirmar", lo que baja la confianza.
+- El estimado es un rango razonado, no un compromiso, y no incluye tiempos de espera, coordinación, QA ni despliegue.
+- Guardar el análisis funciona mejor en un repositorio `git`; sin git, el archivo va a la carpeta raíz del proyecto y no se ignora automáticamente.
+
+**Probada**
+
+- Todavía sin probar en Claude Code, OpenAI Codex ni GitHub Copilot.
 
 ## Estructura del repositorio
 

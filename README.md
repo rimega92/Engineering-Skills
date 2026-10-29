@@ -20,6 +20,7 @@ Both versions of a skill have the same folder name and the same content.
 - [Skills](#skills)
   - [readme-docs](#readme-docs)
   - [review-changes](#review-changes)
+  - [change-impact-analysis](#change-impact-analysis)
 - [Repository structure](#repository-structure)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -33,6 +34,7 @@ Both versions of a skill have the same folder name and the same content.
 | ----- | ------------- | ----- |
 | [`readme-docs`](#readme-docs) | Create a project's README.md, or update it after code changes | Agnostic |
 | [`review-changes`](#review-changes) | Review code changes before a commit or a pull request, with a prioritized report and recommendations | Agnostic |
+| [`change-impact-analysis`](#change-impact-analysis) | Analyze what a planned change affects before implementing it, with an assessment, a count of what to modify and an effort estimate | Agnostic |
 
 ### readme-docs
 
@@ -119,6 +121,52 @@ Reviews code changes before a commit or a pull request to catch the problems tha
 
 - Claude Code: tested on an iOS app project (Xcode, about 11,000 lines of Swift), reviewing the whole project in Deep mode. It ran the tests and the Release build, applied the project's own rules and reported relevant findings with evidence, without noise. Also tested on a Java microservice, with the same results.
 - OpenAI Codex and GitHub Copilot: not tested yet.
+
+### change-impact-analysis
+
+Analyzes a change before you write it: which modules, units, processes, contracts, data, tests, configuration and consumers it can affect, directly or indirectly. It explores the code, asks you the questions that decide what really needs to change, and gives you an assessment, a count of what to modify and an effort estimate. It never changes the code.
+
+**When to use it**
+
+- Before starting a feature, refactor, fix or upgrade, to know what it involves and how big it is.
+- To compare a minimal version of a change with the full one.
+- To prepare a ticket or a story: scope, risks, estimate and what to settle first.
+
+**How to use it**
+
+- Describe the change and ask: _"What would it take to add a currency field to orders?"_, _"Analyze the impact of moving payment notifications from REST to events"_, _"How hard is it to upgrade to Spring Boot 3?"_.
+- To force a mode: _"Do a quick impact analysis"_, _"Do a deep impact analysis"_.
+- After the analysis: _"Save the analysis"_, _"Go ahead and implement the minimal scope"_.
+
+**How it works**
+
+- It restates the change and separates the goal from the proposed solution. If a smaller change meets the goal, it says so.
+- It explores the code to find where the change lands, and then asks you up to six questions in a single message, based on what it found (for example, which endpoints should expose a new field, or what happens to existing records). Each question comes with a proposed default; anything you don't answer becomes a visible assumption.
+- The size and risk of the change decide how deep it goes:
+  - **Quick** (local change, no contracts, data or sensitive areas): code and tests in depth, one line for each other dimension, few or no questions.
+  - **Deep** (several modules, public contracts, data or migrations, sensitive areas, or high uncertainty): all ten dimensions in depth.
+- The ten dimensions are code, processes and flows, contracts, data, tests, consumers, configuration and infrastructure, security, operations, and documentation. It also searches for uses the compiler can't see: names in strings, serialization, routes, SQL, configuration and scripts.
+- Every affected item has a location (`path:line`), the kind of impact (direct or indirect) and the evidence that links it to the change. Consumers outside the repository (other services, old app versions, third parties) are listed as "to confirm", with how to confirm them.
+- The result comes in the conversation, starting with a summary: size (XS to XL), an estimate as a range for a developer who knows the code, and three separate ratings for complexity, risk and confidence. Then it gives the impact by area, the count of files and tests to modify, create or delete, the estimate broken down by activity with what makes it grow, what to check before starting, risks, minimal versus full scope and a suggested implementation order.
+- It only runs commands that change nothing (searches, `git log`). It doesn't run the tests: it describes them.
+- If you ask, it saves the analysis to `.impact/<change>.md` in the folder of the project the change targets (in a monorepo, the root of the microservice, app or package it modifies, or the root of the repository if it touches several) and tells you the path, both relative to the repository and absolute. It keeps analyses out of commits and pushes: the first time, it adds `.impact/` to a `.gitignore` and reminds you to commit that change.
+
+**Files**
+
+- `SKILL.md`: the workflow: understand, explore, mode, questions, analysis, verification, delivery and saving.
+- `references/impact-checklist.md`: how to search and what to look for in each of the ten dimensions.
+- `references/estimation.md`: the complexity, risk and confidence scales, the sizes and how to build the estimate.
+- `references/report-template.md`: the structure of the analysis and its size in each mode.
+
+**Requirements and limitations**
+
+- It only sees what's in the repository. Consumers and systems outside it are marked as "to confirm", which lowers the confidence.
+- The estimate is a reasoned range, not a commitment, and it doesn't include waiting time, coordination, QA or deploy.
+- Saving the analysis works best in a `git` repository; without git, the file goes in the project's root folder and isn't ignored automatically.
+
+**Tested**
+
+- Not tested yet in Claude Code, OpenAI Codex or GitHub Copilot.
 
 ## Repository structure
 
