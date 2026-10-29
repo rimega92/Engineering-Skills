@@ -35,6 +35,7 @@ Estructura del informe que se guarda en `.reviews/<rama>/review-<n>.md`. Debe se
 | **Rango** | `<sha corto del punto de separación>..<sha corto>` (<n> commits) |
 | **Pull request** | <#número y título, si lo hay> |
 | **Archivos** | <n> revisados (<+añadidas> / <-eliminadas> líneas) |
+| **Componentes** | <en un monorepo, los componentes que tocan los cambios> |
 | **Modo** | <Rápida | Estándar: áreas revisadas a fondo | Profunda: por qué> |
 | **Estándares consultados** | <archivos y reglas usados, por ejemplo `AGENTS.md`, `.eslintrc`, `docs/architecture.md`> |
 | **Ronda anterior** | <`review-<n-1>.md`, o "Ninguna"> |

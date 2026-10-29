@@ -35,6 +35,7 @@ Structure of the report saved to `.reviews/<branch>/review-<n>.md`. It should be
 | **Range** | `<merge base short sha>..<short sha>` (<n> commits) |
 | **Pull request** | <#number and title, if any> |
 | **Files** | <n> reviewed (<+added> / <-removed> lines) |
+| **Components** | <in a monorepo, the components the changes touch> |
 | **Mode** | <Quick | Standard: areas reviewed in depth | Deep: why> |
 | **Standards consulted** | <files and rules used, for example `AGENTS.md`, `.eslintrc`, `docs/architecture.md`> |
 | **Previous round** | <`review-<n-1>.md`, or "None"> |

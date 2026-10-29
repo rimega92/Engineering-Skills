@@ -138,7 +138,14 @@ If you can't answer them with enough confidence, don't present the finding as a 
 
 Use `references/report-template.md`. In Quick mode, write the short report the template describes. In every mode, P0, P1 and P2 findings use the full format, and P3 and Info findings the compact one-line format.
 
-**Location:** `.reviews/<branch>/review-<n>.md` at the root of the repository.
+**Location:** `.reviews/<branch>/review-<n>.md`, in this folder:
+
+- **Single-project repository:** the root of the repository.
+- **Monorepo, changes in one component:** the root folder of that microservice, app or package (for example, `services/orders/.reviews/`).
+- **Monorepo, changes in several components:** the root of the repository. List the components the changes touch in the report's header.
+- **Later rounds** stay in the folder of the first round, even if the components the changes touch are different now.
+
+From here on, `<folder>` is that folder.
 
 - `<branch>` is the branch name with `/` replaced by `-` (`feat/login` → `feat-login`). For a pull request reviewed without its branch checked out, use `pr-<number>`. With a detached HEAD, use `commit-<short sha>`.
 - `<n>` is the next round number: `1` for the first review of that branch, `2` for the next one, and so on.
@@ -146,10 +153,10 @@ Use `references/report-template.md`. In Quick mode, write the short report the t
 
 **Keep reports out of git.** Reports are personal working files and must never be committed or pushed. Before writing the report:
 
-1. Check whether `.reviews/` is ignored: `git check-ignore -q .reviews/`.
-2. If it isn't, add it to the project's `.gitignore` at the root of the repository (create the file if it doesn't exist), on its own line with a comment: `# Code review reports (review-changes)` followed by `.reviews/`. Don't change anything else in the file.
-3. Tell the user that `.gitignore` changed and that they need to commit it. Don't commit it yourself.
-4. If `.reviews/` was already committed (`git ls-files .reviews` lists files), ignoring it isn't enough: warn the user and suggest `git rm -r --cached .reviews` to stop tracking it without deleting the reports.
+1. Check whether the folder is ignored: `git check-ignore -q <folder>/.reviews/`.
+2. If it isn't, add `.reviews/` to a `.gitignore`: the one in `<folder>` if it has one, otherwise the one at the root of the repository (create it if it doesn't exist). Put it on its own line with a comment: `# Code review reports (review-changes)` followed by `.reviews/`. In the root `.gitignore`, the pattern has no leading `/`, so it also covers the `.reviews/` folders of the other components in a monorepo. Don't change anything else in the file.
+3. Tell the user which `.gitignore` changed and that they need to commit it. Don't commit it yourself.
+4. If `.reviews/` was already committed (`git ls-files <folder>/.reviews` lists files), ignoring it isn't enough: warn the user and suggest `git rm -r --cached <folder>/.reviews` to stop tracking it without deleting the reports.
 
 In later reviews, don't report that `.gitignore` line as a finding or count it as part of the change.
 
@@ -157,7 +164,7 @@ In later reviews, don't report that `.gitignore` line as a finding or count it a
 
 If there are no relevant defects, say so explicitly, without claiming the code is bug-free.
 
-When the report is written, give the user a short summary in the conversation: the mode, the verdict, the number of findings per priority, the most important ones, the validations that ran and the path to the report. Don't paste the whole report.
+When the report is written, give the user a short summary in the conversation: the mode, the verdict, the number of findings per priority, the most important ones, the validations that ran and the path to the report, relative to the root of the repository. Don't paste the whole report.
 
 ## 8. Fix (with approval)
 
@@ -175,7 +182,7 @@ When the user approves:
 
 When the user asks to review again (for example, "review again", "check whether it's fixed"), and there's already a report for the branch:
 
-1. **Read the previous report** (`review-<n-1>.md`): its findings, the commit it reviewed, its mode and the standards it consulted.
+1. **Read the previous report** (`review-<n-1>.md`, in the same `<folder>/.reviews/<branch>/` as the earlier rounds): its findings, the commit it reviewed, its mode and the standards it consulted.
 2. **Review the same scope again** as in step 1, with the current state of the code, and run the validations again. Reuse the standards listed in the previous report instead of searching for them again; look again only at the ones that changed since that commit. Choose the mode again for the current change: it can go up or down.
 3. **Check each previous finding** and mark it:
    - ✅ **Fixed:** the problem is gone and the fix introduces no new problem.
