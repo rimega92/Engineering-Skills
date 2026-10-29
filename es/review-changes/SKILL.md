@@ -138,7 +138,14 @@ Si no puedes responderlas con suficiente confianza, no presentes el hallazgo com
 
 Usa `references/report-template.md`. En modo Rápida, escribe el informe corto que describe la plantilla. En todos los modos, los hallazgos P0, P1 y P2 usan el formato completo, y los P3 e Info el formato compacto de una línea.
 
-**Ubicación:** `.reviews/<rama>/review-<n>.md` en la raíz del repositorio.
+**Ubicación:** `.reviews/<rama>/review-<n>.md`, en esta carpeta:
+
+- **Repositorio de un solo proyecto:** la raíz del repositorio.
+- **Monorepo, cambios en un solo componente:** la carpeta raíz de ese microservicio, app o paquete (por ejemplo, `services/orders/.reviews/`).
+- **Monorepo, cambios en varios componentes:** la raíz del repositorio. Lista en la cabecera del informe los componentes que tocan los cambios.
+- **Las rondas siguientes** se quedan en la carpeta de la primera ronda, aunque ahora los cambios toquen otros componentes.
+
+A partir de aquí, `<carpeta>` es esa carpeta.
 
 - `<rama>` es el nombre de la rama con `/` cambiado por `-` (`feat/login` → `feat-login`). Para un pull request revisado sin tener su rama activa, usa `pr-<número>`. Con un HEAD desacoplado, usa `commit-<sha corto>`.
 - `<n>` es el siguiente número de ronda: `1` para la primera revisión de esa rama, `2` para la siguiente, y así sucesivamente.
@@ -146,10 +153,10 @@ Usa `references/report-template.md`. En modo Rápida, escribe el informe corto q
 
 **Mantén los informes fuera de git.** Los informes son archivos de trabajo personales y nunca deben entrar en un commit ni subirse. Antes de escribir el informe:
 
-1. Comprueba si `.reviews/` está ignorada: `git check-ignore -q .reviews/`.
-2. Si no lo está, añádela al `.gitignore` del proyecto en la raíz del repositorio (crea el archivo si no existe), en su propia línea y con un comentario: `# Code review reports (review-changes)` seguido de `.reviews/`. No cambies nada más del archivo.
-3. Avisa al usuario de que `.gitignore` cambió y de que tiene que hacer commit de ese cambio. No lo hagas tú.
-4. Si `.reviews/` ya estaba en un commit (`git ls-files .reviews` lista archivos), ignorarla no basta: avisa al usuario y sugiérele `git rm -r --cached .reviews` para dejar de seguirla sin borrar los informes.
+1. Comprueba si la carpeta está ignorada: `git check-ignore -q <carpeta>/.reviews/`.
+2. Si no lo está, añade `.reviews/` a un `.gitignore`: el de `<carpeta>` si tiene uno; si no, el de la raíz del repositorio (créalo si no existe). Ponlo en su propia línea y con un comentario: `# Code review reports (review-changes)` seguido de `.reviews/`. En el `.gitignore` de la raíz, el patrón no lleva `/` al principio, así que también cubre las carpetas `.reviews/` de los demás componentes de un monorepo. No cambies nada más del archivo.
+3. Avisa al usuario de qué `.gitignore` cambió y de que tiene que hacer commit de ese cambio. No lo hagas tú.
+4. Si `.reviews/` ya estaba en un commit (`git ls-files <carpeta>/.reviews` lista archivos), ignorarla no basta: avisa al usuario y sugiérele `git rm -r --cached <carpeta>/.reviews` para dejar de seguirla sin borrar los informes.
 
 En las revisiones siguientes, no reportes esa línea de `.gitignore` como hallazgo ni la cuentes como parte del cambio.
 
@@ -157,7 +164,7 @@ En las revisiones siguientes, no reportes esa línea de `.gitignore` como hallaz
 
 Si no hay defectos relevantes, dilo explícitamente, sin afirmar que el código está libre de errores.
 
-Cuando el informe esté escrito, dale al usuario un resumen corto en la conversación: el modo, el veredicto, el número de hallazgos por prioridad, los más importantes, las validaciones que se ejecutaron y la ruta del informe. No pegues el informe completo.
+Cuando el informe esté escrito, dale al usuario un resumen corto en la conversación: el modo, el veredicto, el número de hallazgos por prioridad, los más importantes, las validaciones que se ejecutaron y la ruta del informe, relativa a la raíz del repositorio. No pegues el informe completo.
 
 ## 8. Corregir (con aprobación)
 
@@ -175,7 +182,7 @@ Cuando el usuario apruebe:
 
 Cuando el usuario pida revisar de nuevo (por ejemplo, "revisa otra vez", "comprueba si quedó corregido") y ya exista un informe para la rama:
 
-1. **Lee el informe anterior** (`review-<n-1>.md`): sus hallazgos, el commit que revisó, su modo y los estándares que consultó.
+1. **Lee el informe anterior** (`review-<n-1>.md`, en la misma `<carpeta>/.reviews/<rama>/` que las rondas anteriores): sus hallazgos, el commit que revisó, su modo y los estándares que consultó.
 2. **Revisa de nuevo el mismo alcance** del paso 1, con el estado actual del código, y vuelve a ejecutar las validaciones. Reutiliza los estándares que lista el informe anterior en lugar de buscarlos otra vez; vuelve a mirar solo los que cambiaron desde ese commit. Elige otra vez el modo para el cambio actual: puede subir o bajar.
 3. **Comprueba cada hallazgo anterior** y márcalo:
    - ✅ **Corregido:** el problema desapareció y la corrección no introduce ningún problema nuevo.
