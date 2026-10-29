@@ -60,11 +60,17 @@ A skill is a folder that contains a `SKILL.md` file. To install one, copy its fo
 | OpenAI Codex | `.agents/skills/` | `~/.codex/skills/` |
 | GitHub Copilot | `.github/skills/` | `~/.copilot/skills/` |
 
-For example, with Claude Code:
+First, clone the repository:
 
 ```bash
 git clone https://github.com/rimega92/Rimega-Skills.git
+```
 
+Then copy the skill for your tool.
+
+### Claude Code
+
+```bash
 # Personal install
 cp -r Rimega-Skills/en/<skill-name> ~/.claude/skills/
 
@@ -72,7 +78,27 @@ cp -r Rimega-Skills/en/<skill-name> ~/.claude/skills/
 cp -r Rimega-Skills/en/<skill-name> /path/to/project/.claude/skills/
 ```
 
-For another tool, replace the destination with its folder from the table. For the Spanish version, replace `en/` with `es/`.
+### OpenAI Codex
+
+```bash
+# Personal install
+cp -r Rimega-Skills/en/<skill-name> ~/.codex/skills/
+
+# Single-project install
+cp -r Rimega-Skills/en/<skill-name> /path/to/project/.agents/skills/
+```
+
+### GitHub Copilot
+
+```bash
+# Personal install
+cp -r Rimega-Skills/en/<skill-name> ~/.copilot/skills/
+
+# Single-project install
+cp -r Rimega-Skills/en/<skill-name> /path/to/project/.github/skills/
+```
+
+If the destination folder doesn't exist yet, create it first with `mkdir -p`. For the Spanish version, replace `en/` with `es/`.
 
 Install only one language version of each skill. Both versions share the same `name`, so installing both causes a conflict.
 

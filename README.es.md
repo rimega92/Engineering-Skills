@@ -60,11 +60,17 @@ Una skill es una carpeta que contiene un archivo `SKILL.md`. Para instalar una, 
 | OpenAI Codex | `.agents/skills/` | `~/.codex/skills/` |
 | GitHub Copilot | `.github/skills/` | `~/.copilot/skills/` |
 
-Por ejemplo, con Claude Code:
+Primero, clona el repositorio:
 
 ```bash
 git clone https://github.com/rimega92/Rimega-Skills.git
+```
 
+Después, copia la skill para tu herramienta.
+
+### Claude Code
+
+```bash
 # Instalación personal
 cp -r Rimega-Skills/es/<nombre-skill> ~/.claude/skills/
 
@@ -72,7 +78,27 @@ cp -r Rimega-Skills/es/<nombre-skill> ~/.claude/skills/
 cp -r Rimega-Skills/es/<nombre-skill> /ruta/al/proyecto/.claude/skills/
 ```
 
-Para otra herramienta, cambia el destino por su carpeta de la tabla. Para la versión en inglés, cambia `es/` por `en/`.
+### OpenAI Codex
+
+```bash
+# Instalación personal
+cp -r Rimega-Skills/es/<nombre-skill> ~/.codex/skills/
+
+# Instalación en un solo proyecto
+cp -r Rimega-Skills/es/<nombre-skill> /ruta/al/proyecto/.agents/skills/
+```
+
+### GitHub Copilot
+
+```bash
+# Instalación personal
+cp -r Rimega-Skills/es/<nombre-skill> ~/.copilot/skills/
+
+# Instalación en un solo proyecto
+cp -r Rimega-Skills/es/<nombre-skill> /ruta/al/proyecto/.github/skills/
+```
+
+Si la carpeta de destino todavía no existe, créala antes con `mkdir -p`. Para la versión en inglés, cambia `es/` por `en/`.
 
 Instala solo una versión de idioma de cada skill. Las dos versiones comparten el mismo `name`, así que instalar ambas provoca un conflicto.
 
