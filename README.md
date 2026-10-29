@@ -166,7 +166,8 @@ Analyzes a change before you write it: which modules, units, processes, contract
 
 **Tested**
 
-- Not tested yet in Claude Code, OpenAI Codex or GitHub Copilot.
+- Claude Code: tested on an iOS app project (Xcode) and on a Java project, with good results.
+- OpenAI Codex and GitHub Copilot: not tested yet.
 
 ## Repository structure
 
