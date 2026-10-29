@@ -19,6 +19,7 @@ Both versions of a skill have the same folder name and the same content.
 
 - [Skills](#skills)
   - [readme-docs](#readme-docs)
+  - [review-changes](#review-changes)
 - [Repository structure](#repository-structure)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -31,6 +32,7 @@ Both versions of a skill have the same folder name and the same content.
 | Skill | What it's for | Stack |
 | ----- | ------------- | ----- |
 | [`readme-docs`](#readme-docs) | Create a project's README.md, or update it after code changes | Agnostic |
+| [`review-changes`](#review-changes) | Review code changes before a commit or a pull request, with a report and proposed fixes | Agnostic |
 
 ### readme-docs
 
@@ -66,6 +68,49 @@ Creates and maintains a project's `README.md` following a documentation standard
 
 - Claude Code: tested on an iOS app project (Xcode), where it produced complete documentation.
 - OpenAI Codex and GitHub Copilot: not tested yet.
+
+### review-changes
+
+Reviews code changes before a commit or a pull request, the way a careful senior teammate would. It looks at design and structure first, then clean code, bugs, error handling, security, tests and performance. It writes a report with a proposed fix for each finding, can apply the fixes you approve, and can re-review the branch to check them.
+
+**When to use it**
+
+- Before committing, to review what you haven't committed yet.
+- Before opening a pull request, to review the whole branch.
+- To review someone else's pull request.
+- After fixing the findings, to check that they're fixed and that nothing new came up.
+
+**How to use it**
+
+- Ask for it: _"Review my changes"_, _"Review this branch before the PR"_, _"Review PR 42"_.
+- To narrow the scope: _"Review only what I haven't committed"_, _"Review the last commit"_.
+- After the report: _"Fix F1 and F3"_, _"Apply the Critical and Major fixes"_.
+- To check the fixes: _"Review again"_.
+
+**How it works**
+
+- By default it reviews everything that would go into the pull request: the branch's commits since it left its base branch, plus uncommitted changes. For pull requests it uses `gh` or `glab` if they're installed; otherwise it fetches the branch with `git`.
+- It reads the changed files in full and the project's conventions (linters, `AGENTS.md`, `CONTRIBUTING.md`, similar code), so its suggestions fit the project. It checks each finding against the code before reporting it, and marks anything it can't confirm as a question.
+- It rates each finding as 🔴 Critical, 🟠 Major, 🟡 Minor or 💡 Suggestion, and gives the review a verdict: ✅ Ready, ⚠️ Ready with changes or ❌ Needs work.
+- It saves the report to `.reviews/<branch>/review-<n>.md`, one file per round (`review-1.md`, `review-2.md`, ...). The header records the date, the branch, the base and the reviewed commit. It keeps `.reviews/` out of git by adding it to `.git/info/exclude`, which only exists on your machine, so the project's `.gitignore` isn't touched.
+- It never changes code during the review. At the end it offers to apply the fixes, and applies only the ones you approve, without committing.
+- A re-review reads the previous round's report, marks each earlier finding as fixed, partially fixed, still open or no longer applicable, and reviews the fixes and any new changes.
+
+**Files**
+
+- `SKILL.md`: the workflow: scope, context, review, verification, report, fixes and re-review.
+- `references/checklist.md`: what to look for in each category, and the severity scale and verdicts.
+- `references/report-template.md`: the report's structure.
+
+**Requirements and limitations**
+
+- The project must use `git`.
+- Reviewing a pull request by number works best with `gh` (GitHub) or `glab` (GitLab) installed and signed in.
+- It doesn't replace running the tests or the linters: it reads the code, it doesn't execute it.
+
+**Tested**
+
+- Not tested yet.
 
 ## Repository structure
 

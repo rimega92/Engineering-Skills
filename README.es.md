@@ -19,6 +19,7 @@ Las dos versiones de una skill tienen el mismo nombre de carpeta y el mismo cont
 
 - [Skills](#skills)
   - [readme-docs](#readme-docs)
+  - [review-changes](#review-changes)
 - [Estructura del repositorio](#estructura-del-repositorio)
 - [Instalación](#instalación)
 - [Uso](#uso)
@@ -31,6 +32,7 @@ Las dos versiones de una skill tienen el mismo nombre de carpeta y el mismo cont
 | Skill | Para qué sirve | Stack |
 | ----- | -------------- | ----- |
 | [`readme-docs`](#readme-docs) | Crear el README.md de un proyecto o actualizarlo después de cambios en el código | Agnóstica |
+| [`review-changes`](#review-changes) | Revisar cambios de código antes de un commit o de un pull request, con un informe y propuestas de solución | Agnóstica |
 
 ### readme-docs
 
@@ -66,6 +68,49 @@ Crea y mantiene el `README.md` de un proyecto siguiendo un estándar de document
 
 - Claude Code: probada en un proyecto de app de iOS (Xcode), donde generó una documentación completa.
 - OpenAI Codex y GitHub Copilot: todavía sin probar.
+
+### review-changes
+
+Revisa cambios de código antes de un commit o de un pull request, como lo haría un compañero sénior cuidadoso. Mira primero el diseño y la estructura, y después el clean code, los errores, el manejo de errores, la seguridad, las pruebas y el rendimiento. Escribe un informe con una propuesta de solución para cada hallazgo, puede aplicar las correcciones que apruebes y puede volver a revisar la rama para comprobarlas.
+
+**Cuándo usarla**
+
+- Antes de hacer commit, para revisar lo que todavía no has commiteado.
+- Antes de abrir un pull request, para revisar la rama completa.
+- Para revisar el pull request de otra persona.
+- Después de corregir los hallazgos, para comprobar que quedaron corregidos y que no apareció nada nuevo.
+
+**Cómo usarla**
+
+- Pídelo: _"Revisa mis cambios"_, _"Revisa esta rama antes del PR"_, _"Revisa el PR 42"_.
+- Para acotar el alcance: _"Revisa solo lo que no he commiteado"_, _"Revisa el último commit"_.
+- Después del informe: _"Corrige F1 y F3"_, _"Aplica las correcciones Críticas e Importantes"_.
+- Para comprobar las correcciones: _"Revisa otra vez"_.
+
+**Cómo funciona**
+
+- Por defecto revisa todo lo que entraría en el pull request: los commits de la rama desde que salió de su rama base, más los cambios sin commit. Para los pull requests usa `gh` o `glab` si están instalados; si no, trae la rama con `git`.
+- Lee completos los archivos cambiados y las convenciones del proyecto (linters, `AGENTS.md`, `CONTRIBUTING.md`, código parecido), para que sus sugerencias encajen con el proyecto. Comprueba cada hallazgo en el código antes de reportarlo, y marca como pregunta lo que no puede confirmar.
+- Califica cada hallazgo como 🔴 Crítico, 🟠 Importante, 🟡 Menor o 💡 Sugerencia, y da un veredicto a la revisión: ✅ Listo, ⚠️ Listo con cambios o ❌ Necesita trabajo.
+- Guarda el informe en `.reviews/<rama>/review-<n>.md`, un archivo por ronda (`review-1.md`, `review-2.md`, ...). La cabecera registra la fecha, la rama, la base y el commit revisado. Deja `.reviews/` fuera de git añadiéndola a `.git/info/exclude`, que solo existe en tu máquina, así que el `.gitignore` del proyecto no se toca.
+- Nunca cambia el código durante la revisión. Al final ofrece aplicar las correcciones y aplica solo las que apruebes, sin hacer commit.
+- Una nueva ronda lee el informe de la ronda anterior, marca cada hallazgo anterior como corregido, corregido en parte, abierto o que ya no aplica, y revisa las correcciones y los cambios nuevos.
+
+**Archivos**
+
+- `SKILL.md`: el flujo de trabajo: alcance, contexto, revisión, verificación, informe, correcciones y nueva ronda.
+- `references/checklist.md`: qué buscar en cada categoría, y la escala de severidad y los veredictos.
+- `references/report-template.md`: la estructura del informe.
+
+**Requisitos y limitaciones**
+
+- El proyecto debe usar `git`.
+- Revisar un pull request por número funciona mejor con `gh` (GitHub) o `glab` (GitLab) instalado y con la sesión iniciada.
+- No sustituye a ejecutar las pruebas ni los linters: lee el código, no lo ejecuta.
+
+**Probada**
+
+- Todavía sin probar.
 
 ## Estructura del repositorio
 
