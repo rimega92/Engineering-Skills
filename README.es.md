@@ -166,7 +166,8 @@ Analiza un cambio antes de escribirlo: qué módulos, unidades, procesos, contra
 
 **Probada**
 
-- Todavía sin probar en Claude Code, OpenAI Codex ni GitHub Copilot.
+- Claude Code: probada en un proyecto de app de iOS (Xcode) y en un proyecto en Java, con buenos resultados.
+- OpenAI Codex y GitHub Copilot: todavía sin probar.
 
 ## Estructura del repositorio
 
