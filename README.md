@@ -11,18 +11,25 @@ Every skill comes in two languages:
 
 Both versions of a skill have the same folder name and the same content.
 
+- **Status:** active. New skills are added one at a time.
+- **Maintainer:** Ricardo Mesa Gallego ([@rimega92](https://github.com/rimega92)).
+- **Support:** for questions, ideas or bugs, open an [issue](https://github.com/rimega92/Engineering-Skills/issues).
+
 ## Contents
 
 - [Skills](#skills)
   - [readme-docs](#readme-docs)
+- [Repository structure](#repository-structure)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Contributing](#contributing)
+- [More information](#more-information)
+- [License](#license)
 
 ## Skills
 
 | Skill | What it's for | Stack |
-|-------|---------------|-------|
+| ----- | ------------- | ----- |
 | [`readme-docs`](#readme-docs) | Create a project's README.md, or update it after code changes | Agnostic |
 
 ### readme-docs
@@ -30,14 +37,17 @@ Both versions of a skill have the same folder name and the same content.
 Creates and maintains a project's `README.md` following a documentation standard. Each section of the standard is classified as mandatory (`[M]`), conditional (`[C]`, required when it applies to the project) or optional (`[O]`). The standard covers identification, quick start, features, architecture, APIs and integrations, quality, operations and versioning.
 
 **When to use it**
+
 - To document a project that has no README, or only a minimal one.
 - To update the README after changing the code: new dependencies, endpoints, environment variables, services, and so on.
 
 **How to use it**
+
 - Ask for it: _"Document this project"_, _"Update the README with the latest changes"_.
 - It picks the mode on its own: create mode if there's no README with real content, update mode otherwise. To force a mode, say so: _"Create the README from scratch"_, _"Update the README"_.
 
 **How it works**
+
 - It infers everything it can from the project (manifests, scripts, configuration, Docker, CI, tests, code). For facts only the team knows, such as status, owners or the reasons behind decisions, it asks you all its questions in a single message. Anything you leave unanswered becomes a visible `Pending` marker.
 - In update mode it reads a sync marker at the end of the README, `<!-- readme-docs:sync commit=... date=... -->`, reviews the changes since that commit and edits only the affected sections. It keeps text written by people, and it asks before removing a whole section.
 - It moves long content (full API reference, data model, and so on) into files under `docs/` with standard names (`architecture.md`, `api.md`, `data-model.md`, ...) and links them from the README. Update mode keeps those files current too. `docs/` files written by people are linked but never modified.
@@ -46,20 +56,48 @@ Creates and maintains a project's `README.md` following a documentation standard
 - It keeps the existing README's language. A new README is written in the language you use to talk to it.
 
 **Files**
+
 - `SKILL.md`: the workflow for both modes.
 - `references/standard.md`: the documentation standard, with each section's classification.
 - `references/evidence-map.md`: which files in a project trigger or affect each section.
 - `references/style.md`: style guide for wording, Markdown and Mermaid diagrams, including the color palette.
+
+**Tested**
+
+- Claude Code: tested on an iOS app project (Xcode), where it produced complete documentation.
+- OpenAI Codex and GitHub Copilot: not tested yet.
+
+## Repository structure
+
+A skill is plain Markdown: a `SKILL.md` file with YAML frontmatter (`name` and `description`), following the [Agent Skills](https://agentskills.io/) format, plus optional supporting files. There's no code to build, no dependencies to install and no configuration or environment variables.
+
+```text
+Engineering-Skills/
+├── en/                    # English versions of the skills
+│   └── <skill-name>/
+│       ├── SKILL.md       # Instructions the agent follows, with frontmatter
+│       └── references/    # Supporting files the skill reads when needed
+├── es/                    # Spanish versions, same folders as en/
+├── AGENTS.md              # Repository conventions for AI agents
+├── CLAUDE.md              # Imports AGENTS.md for Claude Code
+├── LICENSE
+├── README.md              # This file
+└── README.es.md           # Spanish README
+```
+
+There are no automated tests. Each skill is tested by hand in the tools (see the **Tested** list in each skill's section).
 
 ## Installation
 
 A skill is a folder that contains a `SKILL.md` file. To install one, copy its folder from the language you want into your tool's skills folder:
 
 | Tool | One project | Every project (personal) |
-|------|-------------|--------------------------|
+| ---- | ----------- | ------------------------ |
 | Claude Code | `.claude/skills/` | `~/.claude/skills/` |
 | OpenAI Codex | `.agents/skills/` | `~/.codex/skills/` |
 | GitHub Copilot | `.github/skills/` | `~/.copilot/skills/` |
+
+You need `git` and at least one of the tools in the table.
 
 First, clone the repository:
 
@@ -202,3 +240,14 @@ Contributions are welcome: fixes, improvements to existing skills and new skills
 - **Test it:** before opening the pull request, install the skill in at least one tool and check that it triggers and does what it says.
 
 [`AGENTS.md`](AGENTS.md) has the full conventions. If you work with an AI agent, it reads them on its own.
+
+## More information
+
+- [Agent Skills](https://agentskills.io/): the open format these skills follow.
+- [`AGENTS.md`](AGENTS.md): the repository's conventions for skills, languages and READMEs.
+
+## License
+
+Released under the [MIT License](LICENSE). You can use, copy, modify and share the skills, including in commercial projects, as long as you keep the copyright notice.
+
+<!-- readme-docs:sync commit=3f6d9a3 date=2026-10-29 -->

@@ -11,18 +11,25 @@ Cada skill está disponible en dos idiomas:
 
 Las dos versiones de una skill tienen el mismo nombre de carpeta y el mismo contenido.
 
+- **Estado:** activo. Las skills nuevas se añaden de una en una.
+- **Responsable:** Ricardo Mesa Gallego ([@rimega92](https://github.com/rimega92)).
+- **Soporte:** para dudas, ideas o errores, abre un [issue](https://github.com/rimega92/Engineering-Skills/issues).
+
 ## Índice
 
 - [Skills](#skills)
   - [readme-docs](#readme-docs)
+- [Estructura del repositorio](#estructura-del-repositorio)
 - [Instalación](#instalación)
 - [Uso](#uso)
 - [Cómo contribuir](#cómo-contribuir)
+- [Más información](#más-información)
+- [Licencia](#licencia)
 
 ## Skills
 
 | Skill | Para qué sirve | Stack |
-|-------|----------------|-------|
+| ----- | -------------- | ----- |
 | [`readme-docs`](#readme-docs) | Crear el README.md de un proyecto o actualizarlo después de cambios en el código | Agnóstica |
 
 ### readme-docs
@@ -30,14 +37,17 @@ Las dos versiones de una skill tienen el mismo nombre de carpeta y el mismo cont
 Crea y mantiene el `README.md` de un proyecto siguiendo un estándar de documentación. Cada apartado del estándar está clasificado como obligatorio (`[M]`), condicional (`[C]`, obligatorio cuando aplica al proyecto) u opcional (`[O]`). El estándar cubre identificación, inicio rápido, funcionalidades, arquitectura, APIs e integraciones, calidad, operación y versionado.
 
 **Cuándo usarla**
+
 - Para documentar un proyecto que no tiene README o que tiene uno mínimo.
 - Para actualizar el README después de cambiar el código: nuevas dependencias, endpoints, variables de entorno, servicios, etc.
 
 **Cómo usarla**
+
 - Pídelo: _"Documenta este proyecto"_, _"Actualiza el README con los últimos cambios"_.
 - Elige el modo sola: el modo crear si no hay un README con contenido real, y el modo actualizar si lo hay. Para forzar un modo, dilo: _"Crea el README desde cero"_, _"Actualiza el README"_.
 
 **Cómo funciona**
+
 - Deduce todo lo que puede del proyecto (manifiestos, scripts, configuración, Docker, CI, pruebas, código). Para los datos que solo conoce el equipo, como el estado, los responsables o el porqué de las decisiones, te hace todas las preguntas en un solo mensaje. Lo que dejes sin responder queda como un marcador visible de `Pendiente`.
 - En el modo actualizar lee una marca de sincronización al final del README, `<!-- readme-docs:sync commit=... date=... -->`, revisa los cambios desde ese commit y edita solo los apartados afectados. Conserva el texto escrito por personas y pregunta antes de eliminar un apartado completo.
 - Mueve el contenido extenso (referencia completa de la API, modelo de datos, etc.) a archivos dentro de `docs/` con nombres estándar (`architecture.md`, `api.md`, `data-model.md`, ...) y los enlaza desde el README. El modo actualizar también mantiene al día esos archivos. Los archivos de `docs/` escritos por personas se enlazan, pero nunca se modifican.
@@ -46,20 +56,48 @@ Crea y mantiene el `README.md` de un proyecto siguiendo un estándar de document
 - Mantiene el idioma del README existente. Un README nuevo se escribe en el idioma en el que le hablas.
 
 **Archivos**
+
 - `SKILL.md`: el flujo de trabajo de los dos modos.
 - `references/standard.md`: el estándar de documentación, con la clasificación de cada apartado.
 - `references/evidence-map.md`: qué archivos de un proyecto activan o afectan cada apartado.
 - `references/style.md`: guía de estilo para la redacción, el Markdown y los diagramas Mermaid, con la paleta de colores.
+
+**Probada**
+
+- Claude Code: probada en un proyecto de app de iOS (Xcode), donde generó una documentación completa.
+- OpenAI Codex y GitHub Copilot: todavía sin probar.
+
+## Estructura del repositorio
+
+Una skill es Markdown sin más: un archivo `SKILL.md` con frontmatter YAML (`name` y `description`), según el formato [Agent Skills](https://agentskills.io/), más archivos de apoyo opcionales. No hay código que compilar, dependencias que instalar, ni configuración o variables de entorno.
+
+```text
+Engineering-Skills/
+├── en/                    # Versiones en inglés de las skills
+│   └── <nombre-skill>/
+│       ├── SKILL.md       # Instrucciones que sigue el agente, con frontmatter
+│       └── references/    # Archivos de apoyo que la skill lee cuando los necesita
+├── es/                    # Versiones en español, mismas carpetas que en/
+├── AGENTS.md              # Convenciones del repositorio para agentes de IA
+├── CLAUDE.md              # Importa AGENTS.md para Claude Code
+├── LICENSE
+├── README.md              # README en inglés
+└── README.es.md           # Este archivo
+```
+
+No hay pruebas automáticas. Cada skill se prueba a mano en las herramientas (consulta la lista **Probada** en la sección de cada skill).
 
 ## Instalación
 
 Una skill es una carpeta que contiene un archivo `SKILL.md`. Para instalar una, copia su carpeta, en el idioma que prefieras, a la carpeta de skills de tu herramienta:
 
 | Herramienta | Un solo proyecto | Todos tus proyectos (personal) |
-|-------------|------------------|--------------------------------|
+| ----------- | ---------------- | ------------------------------ |
 | Claude Code | `.claude/skills/` | `~/.claude/skills/` |
 | OpenAI Codex | `.agents/skills/` | `~/.codex/skills/` |
 | GitHub Copilot | `.github/skills/` | `~/.copilot/skills/` |
+
+Necesitas `git` y al menos una de las herramientas de la tabla.
 
 Primero, clona el repositorio:
 
@@ -202,3 +240,14 @@ Las contribuciones son bienvenidas: correcciones, mejoras de skills existentes y
 - **Pruébala:** antes de abrir el pull request, instala la skill en al menos una herramienta y comprueba que se activa y hace lo que dice.
 
 [`AGENTS.md`](AGENTS.md) recoge todas las convenciones. Si trabajas con un agente de IA, las lee por su cuenta.
+
+## Más información
+
+- [Agent Skills](https://agentskills.io/): el formato abierto que siguen estas skills.
+- [`AGENTS.md`](AGENTS.md): las convenciones del repositorio para skills, idiomas y README.
+
+## Licencia
+
+Publicado bajo la [licencia MIT](LICENSE). Puedes usar, copiar, modificar y compartir las skills, también en proyectos comerciales, siempre que mantengas el aviso de copyright.
+
+<!-- readme-docs:sync commit=3f6d9a3 date=2026-10-29 -->
