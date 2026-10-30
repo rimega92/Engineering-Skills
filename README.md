@@ -71,7 +71,8 @@ Creates and maintains a project's `README.md` following a documentation standard
 **Tested**
 
 - Claude Code: tested on an iOS app project (Xcode) and on a Java microservice, where it produced complete documentation.
-- OpenAI Codex and GitHub Copilot: not tested yet.
+- GitHub Copilot: tested, with good results.
+- OpenAI Codex: not tested yet.
 
 ### review-changes
 
@@ -122,7 +123,8 @@ Reviews code changes before a commit or a pull request to catch the problems tha
 **Tested**
 
 - Claude Code: tested on an iOS app project (Xcode, about 11,000 lines of Swift), reviewing the whole project in Deep mode. It ran the tests and the Release build, applied the project's own rules and reported relevant findings with evidence, without noise. Also tested on a Java microservice, with the same results.
-- OpenAI Codex and GitHub Copilot: not tested yet.
+- GitHub Copilot: tested, with good results.
+- OpenAI Codex: not tested yet.
 
 ### change-impact-analysis
 
@@ -169,7 +171,8 @@ Analyzes a change before you write it: which modules, units, processes, contract
 **Tested**
 
 - Claude Code: tested on an iOS app project (Xcode) and on a Java project, with good results.
-- OpenAI Codex and GitHub Copilot: not tested yet.
+- GitHub Copilot: tested, with good results.
+- OpenAI Codex: not tested yet.
 
 ### refine-user-story
 
