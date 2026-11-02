@@ -1,6 +1,6 @@
 # Problemas conocidos
 
-Problemas encontrados al ejecutar la versión 5.1.0 del plugin con Gradle 9.8.2 y Java 21. Son hechos de esa versión: en una más nueva, comprueba si cada uno sigue ocurriendo antes de aplicar su corrección.
+Problemas encontrados al ejecutar la versión 5.1.0 del plugin con Gradle 9.8.2 en macOS. Son hechos de esa versión: en una más nueva, comprueba si cada uno sigue ocurriendo antes de aplicar su corrección.
 
 ## 1. La tarea `test` no ejecuta ningún test
 
@@ -19,7 +19,7 @@ subprojects {
 }
 ```
 
-**Corrección en proyectos reactivos.** Con JUnit Platform activo, el listener de BlockHound puede romper la JVM de los tests (`BlockHoundTestExecutionListener could not be instantiated`, `The instrumentation have failed`, visto en módulos con Spring, en Java 21). Si ocurre, exclúyelo también:
+**Corrección en proyectos reactivos.** Con JUnit Platform activo, el listener de BlockHound rompe la JVM de los tests (`BlockHoundTestExecutionListener could not be instantiated`, `The instrumentation have failed`). Ocurrió con el proyecto en Java 17, 21 y 25, y con Gradle ejecutándose en 21 y 25. No se identificó la causa raíz, así que exclúyelo también:
 
 ```groovy
 subprojects {
@@ -33,17 +33,23 @@ subprojects {
 }
 ```
 
-Avisa al usuario de la exclusión: sin ella los tests no corren en ese entorno, pero con ella nada detecta llamadas bloqueantes dentro de flujos reactivos durante los tests.
+Avisa al usuario de la exclusión: sin ella los tests no se ejecutan, pero con ella nada detecta llamadas bloqueantes dentro de flujos reactivos durante los tests.
 
-**Comprobación:** `./gradlew test --rerun-tasks -x pitest`, y busca `build/test-results/test/*.xml` con más de cero tests.
+**Comprobación:** `./gradlew test --rerun-tasks`, y busca `build/test-results/test/*.xml` con más de cero tests. Añade `-x pitest` para omitir la mutación solo si Pitest está declarado: con `--mutation=false` esa tarea no existe y Gradle se detiene con `Task 'pitest' not found`.
 
-## 2. `restmvc`: los tests no compilan con un paquete propio
+## 2. Plantillas con el paquete del plugin fijo
 
-**Síntoma:** `package co.com.bancolombia.api.config does not exist` en `api-rest/src/test/java/.../TestConfig.java`.
+Parte del código generado usa `co.com.bancolombia` en lugar de tu paquete, así que falla con cualquier otro:
 
-**Causa:** la plantilla tiene fijo el paquete del propio plugin en ese import.
+| Módulo | Síntoma | Corrección |
+| ------ | ------- | ---------- |
+| `restmvc` | `package co.com.bancolombia.api.config does not exist` en `TestConfig.java` | Cambia el import a `<paquete>.api.config` |
+| `asynceventhandler` | `package co.com.bancolombia.events.handlers does not exist` en `HandlerRegistryConfigurationTest.java` | Cambia los imports a `<paquete>.events.handlers` |
+| `mcp` | `cannot find symbol: McpSecurityConfig` en los tests de `app-service` | Ver abajo |
 
-**Corrección:** cambia el import a `<paquete>.api.config`.
+**`mcp`** escribe `McpSecurityConfig` y su test en `applications/app-service/src/{main,test}/java/co/com/bancolombia/config/`, incluso con `--enable-security=false`. Mueve ambos a `<paquete>/config/`, actualiza sus líneas `package` y borra las carpetas `co/` vacías. Moverlos también importa en ejecución: `MainApplication` solo escanea tu paquete base, así que en la ubicación original la configuración de seguridad no se cargaría. Con `--enable-security=false`, borra los dos archivos en su lugar y comprueba que el módulo compila.
+
+**Después de generar cualquier módulo,** busca `co.com.bancolombia` en él. Los imports de librerías de esa empresa (`co.com.bancolombia.secretsmanager`, `co.com.bancolombia.commons.jms`, Bin Stash) son correctos. Una referencia a un paquete de tu propio proyecto es este problema.
 
 ## 3. El adaptador `jpa` generado no arranca hasta fijar sus tipos
 
@@ -70,7 +76,13 @@ Avisa al usuario de la exclusión: sin ella los tests no corren en ese entorno, 
 private CreateOrderUseCase createOrderUseCase;
 ```
 
-## 6. `ca` sobrescribe `gradle.properties`
+## 6. `secretskafkastrimzi` no funciona
+
+**Síntomas:** `--secret-name` detiene la tarea con `Cannot invoke ... ModuleBuilder.addParam ... because "this.builder" is null`. Sin esa opción genera un módulo llamado `secrets`, y la compilación falla con `Could not find software.amazon.awssdk:sts:.`, una dependencia sin versión.
+
+**Qué hacer:** avisa al usuario antes de usarlo. Añadir el BOM del SDK de AWS al módulo debería aportar la versión, pero esta corrección no se probó.
+
+## 7. `ca` sobrescribe `gradle.properties`
 
 **Síntoma:** un `analytics=false` escrito antes de `ca` se pierde, y `ca` envía igualmente su evento de analítica.
 
@@ -87,12 +99,17 @@ private CreateOrderUseCase createOrderUseCase;
 | `gpt` genera en `./performance-test/` | Genera en `deployment/performance-test/` |
 | `gpl` genera en `./deployment/` | El pipeline de GitHub va en `.github/workflows/` |
 | Las tablas listan `restmvc`, `jpa` y `grpc` sin tipo de proyecto | No se rechazan en proyectos reactivos, pero ahí no corresponden |
+| `secretskafkastrimzi` acepta `--secret-name` | La opción hace fallar la tarea |
 
 ## Qué se verificó y qué no
 
-- **Ejecutado desde la generación hasta una petición real, reactivo:** `ca`, `gm`, `guc`, adaptador `generic`, `webflux`, tests, compilación, `bootRun`.
-- **Ejecutado, imperativo, con `--lombok=false`:** `ca`, `restmvc` con Jetty y Swagger, tests, compilación, `bootRun`.
-- **Generado y compilado:** `r2dbc`, `restconsumer`, `webflux --from-swagger`, `gh`.
-- **Solo generado:** `jpa`, `gpl --type=github`, `gat`, `gpt --type=jmeter`.
-- **Leído del código generado, no ejecutado:** que la regla 2.5 haga fallar el test.
-- **Sin probar:** los demás adaptadores y entry points, conexiones reales a bases de datos y Java 17 o 25. Sus opciones vienen de la documentación y del código fuente. Compila justo después de generarlos.
+- **De la generación a una petición real:** reactivo con `ca`, `gm`, `guc`, adaptador `generic` y `webflux`. Imperativo con `--lombok=false` y `restmvc` con Jetty y Swagger.
+- **Versiones de Java:** los tests del proyecto reactivo se ejecutaron en 17, 21 y 25. El proyecto imperativo y la matriz de módulos de abajo, solo en 21.
+- **Generados, compilados y con sus tests generados en verde, con un paquete propio, en Java 21:**
+  - Adaptadores reactivos: `mongodb`, `redis`, `sqs`, `restconsumer`, `dynamodb`, `s3`, `kms`, `secrets`, `mq`, `asynceventbus`, `rsocket`, `binstash`, `cognitotokenprovider`, `r2dbc`.
+  - Entry points reactivos: `webflux`, `kafka`, `sqs`, `mq`, `graphql`, `rsocket`, `kafkastrimzi`, `agent`, y `asynceventhandler` y `mcp` después de las correcciones de arriba.
+  - Adaptadores imperativos: `mongodb`, `redis`, `sqs`, `restconsumer`, `dynamodb`, `s3`, `kms`, `secrets`, `mq`, `jpa`.
+  - Entry points imperativos: `sqs`, `mq`, `graphql`, `grpc`, y `restmvc` después de la corrección de arriba.
+- **ArchUnit:** la regla 2.5 hace fallar el test y la 2.6 solo escribe en `build/issues.json`, ambas vistas en ejecución. Las demás se leyeron del código generado.
+- **Solo generados:** `gpl --type=github`, `gat`, `gpt --type=jmeter`.
+- **Sin probar:** conexiones a infraestructura real (bases de datos, brokers, AWS), opciones no predeterminadas de la mayoría de los módulos y otros sistemas operativos. Pasar aquí significa que el código compila y sus tests generados pasan, no que el módulo funcione contra el servicio real. Los adaptadores imperativos `mongodb`, `redis`, `sqs`, `dynamodb`, `s3`, `kms`, `secrets` y `mq` no generan tests propios, así que para ellos solo significa que compilan.

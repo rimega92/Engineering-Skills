@@ -54,7 +54,7 @@ Reference for version 5.1.0. To check an option in another version, run `./gradl
 | `cognitotokenprovider` | Cognito tokens | Reactive | - |
 | `r2dbc` | R2DBC PostgreSQL | Reactive | - |
 | `rsocket` | RSocket requester | Reactive | - |
-| `secretskafkastrimzi` | Secrets for Kafka Strimzi | Reactive\* | `--secret-name` |
+| `secretskafkastrimzi` | Secrets for Kafka Strimzi. Broken, see known issues | Reactive\* | `--secret-name` |
 
 ## Entry points (`gep --type=...`)
 

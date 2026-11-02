@@ -78,7 +78,7 @@ The rule behind 2.5 and 2.7 matters for correctness, not only style: a bean is s
 ## Quality and packaging
 
 - **Coverage:** `build/reports/jacocoMergedReport/`.
-- **Mutation:** with Pitest declared, `pitest` runs in each module as part of `jacocoTestReport`, and the aggregate lands in `build/reports/pitest/`. It requires all tests to pass. To skip it in a run: `-x pitest`.
+- **Mutation:** with Pitest declared, `pitest` runs in each module as part of `jacocoTestReport`, and the aggregate lands in `build/reports/pitest/`. It requires all tests to pass. To skip it in a run: `-x pitest`, only if Pitest is declared.
 - **Sonar:** configured at the root, reading the reports above and `build/issues.json`. Project values go in a `sonar {}` block in the root `build.gradle`.
 - **Packaging:** `bootJar` produces `<project>.jar` in `applications/app-service/build/libs/`. `deployment/Dockerfile` is a starting point: review it before relying on it.
 - **Build cache:** in `build-cache/` at the root, already ignored by git.

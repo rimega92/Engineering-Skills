@@ -78,7 +78,7 @@ La regla detrás de 2.5 y 2.7 importa para la corrección, no solo para el estil
 ## Calidad y empaquetado
 
 - **Cobertura:** `build/reports/jacocoMergedReport/`.
-- **Mutación:** con Pitest declarado, `pitest` corre en cada módulo como parte de `jacocoTestReport`, y el agregado queda en `build/reports/pitest/`. Requiere que todos los tests pasen. Para omitirlo en una ejecución: `-x pitest`.
+- **Mutación:** con Pitest declarado, `pitest` corre en cada módulo como parte de `jacocoTestReport`, y el agregado queda en `build/reports/pitest/`. Requiere que todos los tests pasen. Para omitirlo en una ejecución: `-x pitest`, solo si Pitest está declarado.
 - **Sonar:** configurado en la raíz, lee los informes anteriores y `build/issues.json`. Los valores del proyecto van en un bloque `sonar {}` del `build.gradle` de la raíz.
 - **Empaquetado:** `bootJar` produce `<proyecto>.jar` en `applications/app-service/build/libs/`. `deployment/Dockerfile` es un punto de partida: revísalo antes de confiar en él.
 - **Caché de compilación:** en `build-cache/` en la raíz, ya ignorada por git.
