@@ -54,7 +54,7 @@ Referencia para la versión 5.1.0. Para comprobar una opción en otra versión, 
 | `cognitotokenprovider` | Tokens de Cognito | Reactivo | - |
 | `r2dbc` | R2DBC PostgreSQL | Reactivo | - |
 | `rsocket` | Requester RSocket | Reactivo | - |
-| `secretskafkastrimzi` | Secretos para Kafka Strimzi | Reactivo\* | `--secret-name` |
+| `secretskafkastrimzi` | Secretos para Kafka Strimzi. No funciona, ver problemas conocidos | Reactivo\* | `--secret-name` |
 
 ## Entry points (`gep --type=...`)
 

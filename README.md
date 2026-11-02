@@ -238,7 +238,7 @@ Creates new Java applications with Clean Architecture using the Bancolombia Grad
 
 - It checks Java, Gradle and the plugin's latest version, and asks for all the project's decisions in one message, each with a recommendation: name, package, reactive or imperative, Java version, and the entry points and adapters needed.
 - It runs the plugin's tasks, after checking that each module fits the project type and doesn't exist yet, because regenerating silently overwrites your edits.
-- It applies fixes for problems found by running plugin 5.1.0. The main one: the generated `test` task runs no tests, so a failing test doesn't break the build.
+- It applies fixes for problems found by running plugin 5.1.0. The main ones: the generated `test` task runs no tests, so a failing test doesn't break the build, and some templates hardcode the plugin's own package.
 - It implements the flow respecting the dependency rule, and verifies with `validateStructure`, the build, the test results and a real start of the application, reporting what it couldn't verify.
 
 **Files**
@@ -253,11 +253,11 @@ Creates new Java applications with Clean Architecture using the Bancolombia Grad
 - Java 17 or later, Gradle 9.2.1 or later, and network access to the Gradle Plugin Portal and Maven Central.
 - The plugin sends usage data to an external server by default. `ca` always sends one event; the skill warns you first and turns analytics off right after it.
 - It doesn't migrate Scaffold 4 projects, and it doesn't apply Clean Architecture to projects not generated with the plugin.
-- Known issues are specific to plugin 5.1.0, and not every adapter and entry point has been run. See `references/known-issues.md`.
+- Known issues are specific to plugin 5.1.0. Adapters and entry points were generated, compiled and had their generated tests run, but not against real infrastructure. `secretskafkastrimzi` doesn't work. See `references/known-issues.md`.
 
 **Tested**
 
-- Not tested yet as a skill in Claude Code, OpenAI Codex or GitHub Copilot. Its commands and fixes were checked by running plugin 5.1.0 with Gradle 9.8.2 and Java 21, on one reactive and one imperative project.
+- Not tested yet as a skill in Claude Code, OpenAI Codex or GitHub Copilot. Its commands and fixes were checked by running plugin 5.1.0 with Gradle 9.8.2 and Java 21, on one reactive and one imperative project. The reactive project's tests also ran on Java 17 and 25.
 
 ## Repository structure
 

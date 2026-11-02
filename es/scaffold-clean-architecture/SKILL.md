@@ -47,7 +47,7 @@ Pregúntalo todo en un solo mensaje, con una recomendación para cada punto. No 
 | Java | `--java-version=17`, `21` o `25` | La más alta de estas que esté instalada |
 | Lombok | `--lombok` | `true`. Con `false`, algunos adaptadores no compilan (ver problemas conocidos) |
 | Métricas | `--metrics` | `true` |
-| Pruebas de mutación | `--mutation` | `true`. Hacen más lenta la compilación; `false` quita Pitest |
+| Pruebas de mutación | `--mutation` | `true`. Hacen más lenta la compilación; `false` quita Pitest, y entonces `-x pitest` falla porque la tarea no existe |
 | OpenTelemetry | `--otel` | `false`, salvo que haya un colector. Con `true`, el agente registra errores de exportación continuamente si nada escucha en `localhost:4318` |
 | Entry points y adaptadores | Ver `references/tasks.md` | Lo que necesite el servicio: cómo recibe peticiones y con qué sistemas habla |
 | Primer modelo y caso de uso | Nombres de negocio | Opcional, se pueden añadir después |
@@ -91,7 +91,11 @@ Lee `references/tasks.md` para las tareas y sus opciones. Antes de cada generado
 2. **Comprueba que aún no existe,** mirando en `domain/` e `infrastructure/`. Si existe, pregunta antes de sobrescribir y sugiere hacer commit primero.
 3. **Usa nombres de negocio** para modelos y casos de uso, sin palabras de tecnología. El plugin rechaza nombres que terminan en `dto`, `request` o `response` y nombres que contienen `kafka`, `redis`, `s3`, `http` y otros.
 
-Orden habitual: `gm`, `guc`, `gda`, `gep`. Ejecuta `./gradlew validateStructure` después de los generadores y aplica las correcciones de `references/known-issues.md` que correspondan a los módulos generados.
+Orden habitual: `gm`, `guc`, `gda`, `gep`. Después de los generadores:
+
+1. Busca `co.com.bancolombia` en los módulos nuevos y aplica las correcciones de `references/known-issues.md`, problema 2. El plugin deja fijo su propio paquete en algunas plantillas.
+2. Aplica las demás correcciones de ese archivo que correspondan a los módulos generados.
+3. Ejecuta `./gradlew validateStructure compileJava compileTestJava`, para que un problema aparezca ahora y no cuando ya hayas construido encima.
 
 ## 5. Implementa el flujo
 

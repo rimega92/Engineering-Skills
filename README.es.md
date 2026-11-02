@@ -238,7 +238,7 @@ Crea aplicaciones Java nuevas con Clean Architecture usando el plugin de Gradle 
 
 - Comprueba Java, Gradle y la última versión del plugin, y pregunta todas las decisiones del proyecto en un mensaje, cada una con una recomendación: nombre, paquete, reactivo o imperativo, versión de Java, y los entry points y adaptadores necesarios.
 - Ejecuta las tareas del plugin, después de comprobar que cada módulo encaja con el tipo de proyecto y que aún no existe, porque regenerar sobrescribe tus ediciones sin avisar.
-- Aplica correcciones a problemas encontrados al ejecutar el plugin 5.1.0. El principal: la tarea `test` generada no ejecuta ningún test, así que un test que falla no rompe la compilación.
+- Aplica correcciones a problemas encontrados al ejecutar el plugin 5.1.0. Los principales: la tarea `test` generada no ejecuta ningún test, así que un test que falla no rompe la compilación, y algunas plantillas dejan fijo el paquete del propio plugin.
 - Implementa el flujo respetando la regla de dependencias y verifica con `validateStructure`, la compilación, los resultados de los tests y un arranque real de la aplicación, e informa de lo que no pudo verificar.
 
 **Archivos**
@@ -253,11 +253,11 @@ Crea aplicaciones Java nuevas con Clean Architecture usando el plugin de Gradle 
 - Java 17 o superior, Gradle 9.2.1 o superior, y acceso de red al Gradle Plugin Portal y a Maven Central.
 - El plugin envía por defecto datos de uso a un servidor externo. `ca` siempre envía un evento; la skill te avisa antes y desactiva la analítica justo después.
 - No migra proyectos de Scaffold 4 ni aplica Clean Architecture a proyectos no generados con el plugin.
-- Los problemas conocidos son propios del plugin 5.1.0, y no se han ejecutado todos los adaptadores y entry points. Consulta `references/known-issues.md`.
+- Los problemas conocidos son propios del plugin 5.1.0. Los adaptadores y entry points se generaron, compilaron y ejecutaron sus tests generados, pero no contra infraestructura real. `secretskafkastrimzi` no funciona. Consulta `references/known-issues.md`.
 
 **Probada**
 
-- Aún sin probar como skill en Claude Code, OpenAI Codex ni GitHub Copilot. Sus comandos y correcciones se comprobaron ejecutando el plugin 5.1.0 con Gradle 9.8.2 y Java 21, en un proyecto reactivo y uno imperativo.
+- Aún sin probar como skill en Claude Code, OpenAI Codex ni GitHub Copilot. Sus comandos y correcciones se comprobaron ejecutando el plugin 5.1.0 con Gradle 9.8.2 y Java 21, en un proyecto reactivo y uno imperativo. Los tests del proyecto reactivo también se ejecutaron en Java 17 y 25.
 
 ## Estructura del repositorio
 

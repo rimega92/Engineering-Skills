@@ -47,7 +47,7 @@ Ask everything in a single message, with a recommendation for each. Don't ask wh
 | Java | `--java-version=17`, `21` or `25` | The highest of these that's installed |
 | Lombok | `--lombok` | `true`. With `false`, some adapters don't compile (see known issues) |
 | Metrics | `--metrics` | `true` |
-| Mutation tests | `--mutation` | `true`. They slow down the build; `false` removes Pitest |
+| Mutation tests | `--mutation` | `true`. They slow down the build; `false` removes Pitest, and then `-x pitest` fails because the task doesn't exist |
 | OpenTelemetry | `--otel` | `false`, unless there's a collector. With `true`, the agent keeps logging export errors if nothing listens on `localhost:4318` |
 | Entry points and adapters | See `references/tasks.md` | What the service needs: how it receives requests and which systems it talks to |
 | First model and use case | Business names | Optional, they can be added later |
@@ -91,7 +91,11 @@ Read `references/tasks.md` for the tasks and their options. Before each generato
 2. **Check it doesn't exist yet,** looking in `domain/` and `infrastructure/`. If it exists, ask before overwriting and suggest committing first.
 3. **Use business names** for models and use cases, without technology words. The plugin rejects names ending in `dto`, `request` or `response` and names containing `kafka`, `redis`, `s3`, `http` and others.
 
-Usual order: `gm`, `guc`, `gda`, `gep`. Run `./gradlew validateStructure` after the generators, and apply the fixes in `references/known-issues.md` that match the modules you generated.
+Usual order: `gm`, `guc`, `gda`, `gep`. After the generators:
+
+1. Search the new modules for `co.com.bancolombia` and apply the fixes in `references/known-issues.md`, issue 2. The plugin hardcodes its own package in some templates.
+2. Apply the other fixes in that file that match the modules you generated.
+3. Run `./gradlew validateStructure compileJava compileTestJava`, so a problem shows up now and not after you've built on top of it.
 
 ## 5. Implement the flow
 
