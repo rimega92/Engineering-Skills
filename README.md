@@ -22,6 +22,7 @@ Both versions of a skill have the same folder name and the same content.
   - [review-changes](#review-changes)
   - [change-impact-analysis](#change-impact-analysis)
   - [refine-user-story](#refine-user-story)
+  - [scaffold-clean-architecture](#scaffold-clean-architecture)
 - [Repository structure](#repository-structure)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -37,6 +38,7 @@ Both versions of a skill have the same folder name and the same content.
 | [`review-changes`](#review-changes) | Review code changes before a commit or a pull request, with a prioritized report and recommendations | Agnostic |
 | [`change-impact-analysis`](#change-impact-analysis) | Analyze what a planned change affects before implementing it, with an assessment, a count of what to modify and an effort estimate | Agnostic |
 | [`refine-user-story`](#refine-user-story) | Check whether a user story is ready to implement, against the code it affects, and turn it into a refined story with testable acceptance criteria | Agnostic |
+| [`scaffold-clean-architecture`](#scaffold-clean-architecture) | Create a new Java application with Clean Architecture using the Bancolombia Gradle plugin, and add modules to it | Java, Gradle, Spring Boot |
 
 ### readme-docs
 
@@ -217,6 +219,45 @@ Checks whether a user story is clear and complete enough to implement, comparing
 **Tested**
 
 - Not tested yet in Claude Code, OpenAI Codex or GitHub Copilot.
+
+### scaffold-clean-architecture
+
+Creates new Java applications with Clean Architecture using the Bancolombia Gradle plugin [scaffold-clean-architecture](https://github.com/bancolombia/scaffold-clean-architecture), and adds modules to projects generated with it. Its goal is a project that compiles, really runs its tests and starts, not only a generated folder structure.
+
+**When to use it**
+
+- To start a new Java microservice or application with this plugin.
+- To add a model, use case, driven adapter, entry point, helper, pipeline or test project to a project that already uses it.
+
+**How to use it**
+
+- Ask for it: _"Create a reactive Java microservice for orders with Clean Architecture"_, _"Generate a project with the Bancolombia scaffold, with WebFlux and R2DBC"_.
+- In an existing project: _"Add a Kafka consumer"_, _"Add a CreateOrder use case and connect it to a REST endpoint"_.
+
+**How it works**
+
+- It checks Java, Gradle and the plugin's latest version, and asks for all the project's decisions in one message, each with a recommendation: name, package, reactive or imperative, Java version, and the entry points and adapters needed.
+- It runs the plugin's tasks, after checking that each module fits the project type and doesn't exist yet, because regenerating silently overwrites your edits.
+- It applies fixes for problems found by running plugin 5.1.0. The main one: the generated `test` task runs no tests, so a failing test doesn't break the build.
+- It implements the flow respecting the dependency rule, and verifies with `validateStructure`, the build, the test results and a real start of the application, reporting what it couldn't verify.
+
+**Files**
+
+- `SKILL.md`: the workflow: check, ask, generate, add modules, implement and verify.
+- `references/tasks.md`: every task, its options, and what's available for each project type.
+- `references/architecture.md`: layers, dependency rules, automatic wiring, ArchUnit rules and the generated project's configuration.
+- `references/known-issues.md`: verified problems with their fixes, differences from the official documentation, and what was and wasn't tested.
+
+**Requirements and limitations**
+
+- Java 17 or later, Gradle 9.2.1 or later, and network access to the Gradle Plugin Portal and Maven Central.
+- The plugin sends usage data to an external server by default. `ca` always sends one event; the skill warns you first and turns analytics off right after it.
+- It doesn't migrate Scaffold 4 projects, and it doesn't apply Clean Architecture to projects not generated with the plugin.
+- Known issues are specific to plugin 5.1.0, and not every adapter and entry point has been run. See `references/known-issues.md`.
+
+**Tested**
+
+- Not tested yet as a skill in Claude Code, OpenAI Codex or GitHub Copilot. Its commands and fixes were checked by running plugin 5.1.0 with Gradle 9.8.2 and Java 21, on one reactive and one imperative project.
 
 ## Repository structure
 
