@@ -22,6 +22,7 @@ Las dos versiones de una skill tienen el mismo nombre de carpeta y el mismo cont
   - [review-changes](#review-changes)
   - [change-impact-analysis](#change-impact-analysis)
   - [refine-user-story](#refine-user-story)
+  - [scaffold-clean-architecture](#scaffold-clean-architecture)
 - [Estructura del repositorio](#estructura-del-repositorio)
 - [Instalación](#instalación)
 - [Uso](#uso)
@@ -37,6 +38,7 @@ Las dos versiones de una skill tienen el mismo nombre de carpeta y el mismo cont
 | [`review-changes`](#review-changes) | Revisar cambios de código antes de un commit o de un pull request, con un informe priorizado y recomendaciones | Agnóstica |
 | [`change-impact-analysis`](#change-impact-analysis) | Analizar qué afecta un cambio planeado antes de implementarlo, con una valoración, un recuento de lo que hay que modificar y un estimado de esfuerzo | Agnóstica |
 | [`refine-user-story`](#refine-user-story) | Comprobar si una historia de usuario está lista para implementarse, frente al código al que afecta, y convertirla en una historia refinada con criterios de aceptación verificables | Agnóstica |
+| [`scaffold-clean-architecture`](#scaffold-clean-architecture) | Crear una aplicación Java nueva con Clean Architecture usando el plugin de Gradle de Bancolombia, y añadirle módulos | Java, Gradle, Spring Boot |
 
 ### readme-docs
 
@@ -217,6 +219,45 @@ Comprueba si una historia de usuario es lo bastante clara y completa para implem
 **Probada**
 
 - Todavía sin probar en Claude Code, OpenAI Codex ni GitHub Copilot.
+
+### scaffold-clean-architecture
+
+Crea aplicaciones Java nuevas con Clean Architecture usando el plugin de Gradle [scaffold-clean-architecture](https://github.com/bancolombia/scaffold-clean-architecture) de Bancolombia, y añade módulos a proyectos generados con él. Su objetivo es un proyecto que compila, ejecuta de verdad sus tests y arranca, no solo una estructura de carpetas generada.
+
+**Cuándo usarla**
+
+- Para empezar un microservicio o aplicación Java nuevos con este plugin.
+- Para añadir un modelo, caso de uso, driven adapter, entry point, helper, pipeline o proyecto de pruebas a un proyecto que ya lo usa.
+
+**Cómo usarla**
+
+- Pídela: _"Crea un microservicio Java reactivo de pedidos con Clean Architecture"_, _"Genera un proyecto con el scaffold de Bancolombia, con WebFlux y R2DBC"_.
+- En un proyecto existente: _"Añade un consumidor de Kafka"_, _"Añade un caso de uso CreateOrder y conéctalo a un endpoint REST"_.
+
+**Cómo funciona**
+
+- Comprueba Java, Gradle y la última versión del plugin, y pregunta todas las decisiones del proyecto en un mensaje, cada una con una recomendación: nombre, paquete, reactivo o imperativo, versión de Java, y los entry points y adaptadores necesarios.
+- Ejecuta las tareas del plugin, después de comprobar que cada módulo encaja con el tipo de proyecto y que aún no existe, porque regenerar sobrescribe tus ediciones sin avisar.
+- Aplica correcciones a problemas encontrados al ejecutar el plugin 5.1.0. El principal: la tarea `test` generada no ejecuta ningún test, así que un test que falla no rompe la compilación.
+- Implementa el flujo respetando la regla de dependencias y verifica con `validateStructure`, la compilación, los resultados de los tests y un arranque real de la aplicación, e informa de lo que no pudo verificar.
+
+**Archivos**
+
+- `SKILL.md`: el flujo de trabajo: comprobar, preguntar, generar, añadir módulos, implementar y verificar.
+- `references/tasks.md`: todas las tareas, sus opciones y qué está disponible para cada tipo de proyecto.
+- `references/architecture.md`: capas, reglas de dependencias, conexión automática, reglas de ArchUnit y configuración del proyecto generado.
+- `references/known-issues.md`: problemas verificados con sus correcciones, diferencias con la documentación oficial, y qué se probó y qué no.
+
+**Requisitos y limitaciones**
+
+- Java 17 o superior, Gradle 9.2.1 o superior, y acceso de red al Gradle Plugin Portal y a Maven Central.
+- El plugin envía por defecto datos de uso a un servidor externo. `ca` siempre envía un evento; la skill te avisa antes y desactiva la analítica justo después.
+- No migra proyectos de Scaffold 4 ni aplica Clean Architecture a proyectos no generados con el plugin.
+- Los problemas conocidos son propios del plugin 5.1.0, y no se han ejecutado todos los adaptadores y entry points. Consulta `references/known-issues.md`.
+
+**Probada**
+
+- Aún sin probar como skill en Claude Code, OpenAI Codex ni GitHub Copilot. Sus comandos y correcciones se comprobaron ejecutando el plugin 5.1.0 con Gradle 9.8.2 y Java 21, en un proyecto reactivo y uno imperativo.
 
 ## Estructura del repositorio
 
