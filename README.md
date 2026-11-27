@@ -23,6 +23,7 @@ Both versions of a skill have the same folder name and the same content.
   - [change-impact-analysis](#change-impact-analysis)
   - [refine-user-story](#refine-user-story)
   - [scaffold-clean-architecture](#scaffold-clean-architecture)
+  - [developer-contribution-analysis](#developer-contribution-analysis)
 - [Repository structure](#repository-structure)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -39,6 +40,7 @@ Both versions of a skill have the same folder name and the same content.
 | [`change-impact-analysis`](#change-impact-analysis) | Analyze what a planned change affects before implementing it, with an assessment, a count of what to modify and an effort estimate | Agnostic |
 | [`refine-user-story`](#refine-user-story) | Check whether a user story is ready to implement, against the code it affects, and turn it into a refined story with testable acceptance criteria | Agnostic |
 | [`scaffold-clean-architecture`](#scaffold-clean-architecture) | Create a new Java application with Clean Architecture using the Bancolombia Gradle plugin, and add modules to it | Java, Gradle, Spring Boot |
+| [`developer-contribution-analysis`](#developer-contribution-analysis) | Analyze, with real data and no sugarcoating, a developer's contribution to a repository: what's their own, what's template or copy, quality, what survived and a score from 0 to 100, in a report with charts | Agnostic (requires Python 3.9+) |
 
 ### readme-docs
 
@@ -259,16 +261,68 @@ Creates new Java applications with Clean Architecture using the Bancolombia Grad
 
 - Not tested yet as a skill in Claude Code, OpenAI Codex or GitHub Copilot. Its commands and fixes were checked by running plugin 5.1.0 with Gradle 9.8.2 and Java 21, on one reactive and one imperative project. The reactive project's tests also ran on Java 17 and 25.
 
+### developer-contribution-analysis
+
+Gives an honest, data-backed picture of what a developer really contributed to a git repository, using real data from the history and without sugarcoating: what they did, which part is really theirs and which part is a template, a copy of other files, a configuration tweak or junk, how good it is, what survived and how they compare with the rest of the team. It ends with a score from 0 to 100 and delivers a single, complete and well-structured Markdown file with charts, the data and the evidence for every claim. It never modifies the repository.
+
+**When to use it**
+
+- To track or evaluate a person's contribution to a project with data instead of impressions.
+- To prepare a performance or feedback conversation, with facts and evidence-based questions.
+- To find out whether a high line count is their own work or templates and copies.
+
+**How to use it**
+
+- Ask for it: _"Analyze the contribution of john.smith@company.com to this repository"_, _"Run a detailed blame on John Smith and score his contribution"_, _"What did Mary really do in this repo since June?"_.
+- To prepare a conversation: _"Analyze John's contribution and include questions to discuss with him"_.
+- With a different role: _"Analyze Anna's contribution; she's in DevOps"_.
+
+**How it works**
+
+- Lists the repository's authors to find all the person's identities (several names or emails) and asks you, in a single message, whatever isn't clear: identities, branch, period, role, purpose, exclusions and where to save the report. Each question comes with a default answer.
+- Runs `scripts/collect_contribution.py`, which only reads the repository with git and extracts the real data:
+  - commits, PRs and lines added and deleted;
+  - the category of each file (production or test code, deployment, build, configuration, documentation, templates, standard files or files that shouldn't be in git);
+  - which part of their lines already existed in other people's files;
+  - a `git blame` of the whole repository, for the person and for the team;
+  - what happened to each file they touched, and who deleted or rewrote their code;
+  - weekly activity and signals to review: repeated commits, junk files, template markers, possible secrets and fixes to their own commits.
+- Reviews commit by commit: reads the diffs, confirms copies against their source, tells templates from copies, looks for bugs in their own code and follows the fate of that code.
+- Looks for what git doesn't show (PR reviews with `gh`, `az` or `glab` if available) and notes it as a limitation if it can't verify it.
+- Scores six dimensions from 1 to 5 (volume of own work, complexity and value, quality, durability, tests and consistency), with role-based weights, and gives a score from 0 to 100, a level and a confidence.
+- Writes the report: verdict, figures, what the contribution is made of, comparison with the team, activity over time, the fate of their code, commit-by-commit analysis, quality findings, what they did contribute, the score, what the analysis can't see and, on request, questions for the conversation. Charts come in Mermaid and as text bars.
+- Delivers a single file: the report in `.contribution-analysis/<person>-<date>.md` at the repository root, or wherever you say, with all the data tables in its appendices. The script's working files go to a temporary folder that's deleted at the end. It gives you the relative and absolute path and keeps the report out of git: the first time, it adds `.contribution-analysis/` to `.gitignore` and reminds you to commit that change.
+
+**Files**
+
+- `SKILL.md`: the workflow: identify, collect, review, look for what git doesn't show, score, write and save.
+- `scripts/collect_contribution.py`: collects the data into a temporary folder (`data.json`, `summary.md` and `charts.md`), which the skill pours into the report. It only uses the Python standard library.
+- `references/classification.md`: the commit classes, what counts as one's own work by role and the quality problems to look for.
+- `references/scoring.md`: the six dimensions with their anchors, the weights by role, the formula, the levels and the confidence.
+- `references/report-template.md`: the report structure.
+
+**Requirements and limitations**
+
+- `git` and Python 3.9 or later. In very large repositories the `blame` can take a while; you can narrow it by date or exclude folders.
+- Copy detection only compares against files in this repository. Content copied from other repositories or from documentation shows up as "new to the repository", and the manual review qualifies it when there are signs.
+- It only sees what's in git. PR reviews, assigned tasks and work in other repositories have to be queried separately; if they aren't, the score's confidence drops.
+- The score describes the contribution to that repository during that period, not the person's worth as a professional.
+
+**Tested**
+
+- Not tested yet as a skill in Claude Code, OpenAI Codex or GitHub Copilot. The script was tested on a Java microservices monorepo and on this repository.
+
 ## Repository structure
 
-A skill is plain Markdown: a `SKILL.md` file with YAML frontmatter (`name` and `description`), following the [Agent Skills](https://agentskills.io/) format, plus optional supporting files. There's no code to build, no dependencies to install and no configuration or environment variables.
+A skill is plain Markdown: a `SKILL.md` file with YAML frontmatter (`name` and `description`), following the [Agent Skills](https://agentskills.io/) format, plus optional supporting files. There's no code to build, no dependencies to install and no configuration or environment variables. Some skills include supporting Python scripts that only use the standard library.
 
 ```text
 Engineering-Skills/
 ├── en/                    # English versions of the skills
 │   └── <skill-name>/
 │       ├── SKILL.md       # Instructions the agent follows, with frontmatter
-│       └── references/    # Supporting files the skill reads when needed
+│       ├── references/    # Supporting files the skill reads when needed
+│       └── scripts/       # Supporting scripts, in the skills that have them
 ├── es/                    # Spanish versions, same folders as en/
 ├── AGENTS.md              # Repository conventions for AI agents
 ├── CLAUDE.md              # Imports AGENTS.md for Claude Code

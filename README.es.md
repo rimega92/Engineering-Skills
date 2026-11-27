@@ -23,6 +23,7 @@ Las dos versiones de una skill tienen el mismo nombre de carpeta y el mismo cont
   - [change-impact-analysis](#change-impact-analysis)
   - [refine-user-story](#refine-user-story)
   - [scaffold-clean-architecture](#scaffold-clean-architecture)
+  - [developer-contribution-analysis](#developer-contribution-analysis)
 - [Estructura del repositorio](#estructura-del-repositorio)
 - [Instalación](#instalación)
 - [Uso](#uso)
@@ -39,6 +40,7 @@ Las dos versiones de una skill tienen el mismo nombre de carpeta y el mismo cont
 | [`change-impact-analysis`](#change-impact-analysis) | Analizar qué afecta un cambio planeado antes de implementarlo, con una valoración, un recuento de lo que hay que modificar y un estimado de esfuerzo | Agnóstica |
 | [`refine-user-story`](#refine-user-story) | Comprobar si una historia de usuario está lista para implementarse, frente al código al que afecta, y convertirla en una historia refinada con criterios de aceptación verificables | Agnóstica |
 | [`scaffold-clean-architecture`](#scaffold-clean-architecture) | Crear una aplicación Java nueva con Clean Architecture usando el plugin de Gradle de Bancolombia, y añadirle módulos | Java, Gradle, Spring Boot |
+| [`developer-contribution-analysis`](#developer-contribution-analysis) | Analizar con datos reales y sin maquillaje el aporte de un desarrollador a un repositorio: qué es propio, qué es plantilla o copia, calidad, qué sobrevivió y una calificación de 0 a 100, en un informe con gráficas | Agnóstica (requiere Python 3.9+) |
 
 ### readme-docs
 
@@ -259,16 +261,68 @@ Crea aplicaciones Java nuevas con Clean Architecture usando el plugin de Gradle 
 
 - Aún sin probar como skill en Claude Code, OpenAI Codex ni GitHub Copilot. Sus comandos y correcciones se comprobaron ejecutando el plugin 5.1.0 con Gradle 9.8.2 y Java 21, en un proyecto reactivo y uno imperativo. Los tests del proyecto reactivo también se ejecutaron en Java 17 y 25.
 
+### developer-contribution-analysis
+
+Hace una radiografía del aporte real de un desarrollador a un repositorio git, con datos reales del historial y sin maquillaje: qué hizo, qué parte es suya de verdad y qué parte es plantilla, copia de otros archivos, ajuste de configuración o basura, qué calidad tiene, qué sobrevivió y cómo se compara con el resto del equipo. Termina con una calificación de 0 a 100 y entrega un único archivo Markdown, completo y bien estructurado, con gráficas, los datos y la evidencia de cada afirmación. Nunca modifica el repositorio.
+
+**Cuándo usarla**
+
+- Para dar seguimiento al aporte de una persona en un proyecto, o evaluarlo, con datos en lugar de impresiones.
+- Para preparar una conversación de desempeño o de feedback, con hechos y preguntas basadas en evidencia.
+- Para saber si un volumen alto de líneas es trabajo propio o plantillas y copias.
+
+**Cómo usarla**
+
+- Pídela: _"Analiza el aporte de juan.perez@empresa.com en este repositorio"_, _"Hazme un blame detallado de Juan Pérez y califica su aporte"_, _"¿Qué hizo de verdad María en este repo desde junio?"_.
+- Para preparar una conversación: _"Analiza el aporte de Juan e incluye preguntas para hablar con él"_.
+- Con un rol distinto: _"Analiza el aporte de Ana, que es DevOps"_.
+
+**Cómo funciona**
+
+- Lista los autores del repositorio para encontrar todas las identidades de la persona (varios nombres o correos) y te pregunta en un solo mensaje lo que no esté claro: identidades, rama, periodo, rol, propósito, exclusiones y dónde guardar el informe. Cada pregunta trae una respuesta por defecto.
+- Ejecuta `scripts/collect_contribution.py`, que solo lee el repositorio con git y saca los datos reales:
+  - commits, PRs y líneas agregadas y eliminadas;
+  - la categoría de cada archivo (código de producción o de pruebas, despliegue, build, configuración, documentación, plantillas, archivos estándar o archivos que no deberían estar en git);
+  - qué parte de sus líneas ya existía en archivos de otras personas;
+  - un `git blame` de todo el repositorio, para la persona y para el equipo;
+  - qué pasó con cada archivo que tocó y quién borró o reescribió su código;
+  - la actividad por semana y señales que revisar: commits repetidos, archivos basura, marcadores de plantilla, posibles secretos y correcciones de sus propios commits.
+- Revisa commit por commit: lee los diffs, confirma las copias contra su origen, distingue plantilla de copia, busca errores en el código propio y sigue el destino de ese código.
+- Busca lo que git no muestra (revisiones de PR con `gh`, `az` o `glab` si están disponibles) y lo anota como límite si no puede verificarlo.
+- Califica seis dimensiones de 1 a 5 (volumen de trabajo propio, complejidad y valor, calidad, durabilidad, pruebas y constancia), con pesos según el rol, y da una nota de 0 a 100, un nivel y una confianza.
+- Escribe el informe: veredicto, cifras, composición del aporte, comparación con el equipo, actividad en el tiempo, destino de su código, análisis commit por commit, hallazgos de calidad, lo que sí aportó, la calificación, lo que el análisis no ve y, si se pide, preguntas para la conversación. Las gráficas van en Mermaid y en barras de texto.
+- Entrega un solo archivo: el informe en `.contribution-analysis/<persona>-<fecha>.md` en la raíz del repositorio, o donde le digas, con todas las tablas de datos en sus anexos. Los archivos de trabajo del script van a una carpeta temporal que se borra al terminar. Te da la ruta relativa y absoluta, y deja el informe fuera de git: la primera vez añade `.contribution-analysis/` al `.gitignore` y te recuerda que hagas commit de ese cambio.
+
+**Archivos**
+
+- `SKILL.md`: el flujo de trabajo: identificar, recolectar, revisar, buscar lo que git no muestra, calificar, escribir y guardar.
+- `scripts/collect_contribution.py`: recolecta los datos en una carpeta temporal (`data.json`, `summary.md` y `charts.md`), que la skill vuelca en el informe. Solo usa la biblioteca estándar de Python.
+- `references/classification.md`: las clases de commit, qué cuenta como trabajo propio según el rol y los problemas de calidad que buscar.
+- `references/scoring.md`: las seis dimensiones con sus anclas, los pesos por rol, la fórmula, los niveles y la confianza.
+- `references/report-template.md`: la estructura del informe.
+
+**Requisitos y limitaciones**
+
+- `git` y Python 3.9 o superior. En repositorios muy grandes el `blame` puede tardar; se puede acotar por fechas o excluir carpetas.
+- La detección de copia solo compara con archivos de este repositorio. Lo copiado de otros repositorios o de documentación aparece como "nuevo en el repositorio", y la revisión manual lo matiza cuando hay indicios.
+- Solo ve lo que está en git. Las revisiones de PR, las tareas asignadas y el trabajo en otros repositorios hay que consultarlos aparte; si no se consultan, la confianza de la calificación baja.
+- La nota describe el aporte en ese repositorio y en ese periodo, no el valor de la persona como profesional.
+
+**Probada**
+
+- Aún sin probar como skill en Claude Code, OpenAI Codex ni GitHub Copilot. El script se probó en un monorepo Java de microservicios y en este repositorio.
+
 ## Estructura del repositorio
 
-Una skill es Markdown sin más: un archivo `SKILL.md` con frontmatter YAML (`name` y `description`), según el formato [Agent Skills](https://agentskills.io/), más archivos de apoyo opcionales. No hay código que compilar, dependencias que instalar, ni configuración o variables de entorno.
+Una skill es Markdown sin más: un archivo `SKILL.md` con frontmatter YAML (`name` y `description`), según el formato [Agent Skills](https://agentskills.io/), más archivos de apoyo opcionales. No hay código que compilar, dependencias que instalar, ni configuración o variables de entorno. Algunas skills incluyen scripts de apoyo en Python que solo usan la biblioteca estándar.
 
 ```text
 Engineering-Skills/
 ├── en/                    # Versiones en inglés de las skills
 │   └── <nombre-skill>/
 │       ├── SKILL.md       # Instrucciones que sigue el agente, con frontmatter
-│       └── references/    # Archivos de apoyo que la skill lee cuando los necesita
+│       ├── references/    # Archivos de apoyo que la skill lee cuando los necesita
+│       └── scripts/       # Scripts de apoyo, en las skills que los tienen
 ├── es/                    # Versiones en español, mismas carpetas que en/
 ├── AGENTS.md              # Convenciones del repositorio para agentes de IA
 ├── CLAUDE.md              # Importa AGENTS.md para Claude Code
