@@ -298,10 +298,11 @@ Hace una radiografía del aporte real de un desarrollador a un repositorio git, 
 **Archivos**
 
 - `SKILL.md`: el flujo de trabajo: identificar, recolectar, revisar, buscar lo que git no muestra, calificar, escribir y guardar.
-- `scripts/collect_contribution.py`: recolecta los datos en una carpeta temporal: `summary.md` (resumen y métricas de la calificación), `annex.md` (anexos del informe, en el idioma elegido), `charts.md` (gráficas) y `data.json`. Solo usa la biblioteca estándar de Python. Sus pruebas están en `tests/developer-contribution-analysis/`.
+- `scripts/collect_contribution.py`: recolecta los datos en una carpeta temporal: `summary.md` (resumen y métricas de la calificación), `annex.md` (anexos del informe, en el idioma elegido), `charts.md` (gráficas) y `data.json`. Solo usa la biblioteca estándar de Python.
 - `references/classification.md`: las clases de commit, qué cuenta como trabajo propio según el rol y los problemas de calidad que buscar.
 - `references/scoring.md`: las seis dimensiones con sus anclas, los pesos por rol, la fórmula, los niveles y la confianza.
 - `references/report-template.md`: la estructura del informe.
+- `scripts/tests/`: pruebas automáticas del script, con un repositorio sintético. Para ejecutarlas, desde la carpeta de la skill: `python3 -m unittest discover -s scripts/tests -v`.
 
 **Requisitos y limitaciones**
 
@@ -328,9 +329,8 @@ Engineering-Skills/
 │   └── <nombre-skill>/
 │       ├── SKILL.md       # Instrucciones que sigue el agente, con frontmatter
 │       ├── references/    # Archivos de apoyo que la skill lee cuando los necesita
-│       └── scripts/       # Scripts de apoyo, en las skills que los tienen
+│       └── scripts/       # Scripts de apoyo y sus pruebas, en las skills que los tienen
 ├── es/                    # Versiones en español, mismas carpetas que en/
-├── tests/                 # Pruebas automáticas de los scripts de las skills
 ├── AGENTS.md              # Convenciones del repositorio para agentes de IA
 ├── CLAUDE.md              # Importa AGENTS.md para Claude Code
 ├── LICENSE
@@ -338,7 +338,7 @@ Engineering-Skills/
 └── README.es.md           # Este archivo
 ```
 
-Cada skill se prueba a mano en las herramientas (consulta la lista **Probada** en la sección de cada skill). Los scripts de apoyo tienen además pruebas automáticas en `tests/`. Ejecútalas después de cambiar un script: `python3 -m unittest discover -s tests/developer-contribution-analysis -v`.
+Cada skill se prueba a mano en las herramientas (consulta la lista **Probada** en la sección de cada skill). Los scripts de apoyo tienen además pruebas automáticas en `scripts/tests/`, dentro de su skill. Ejecútalas después de cambiar un script.
 
 ## Instalación
 
