@@ -175,22 +175,6 @@ Structure of the contribution report. The report is the only deliverable: a sing
 
 ---
 
-## 11. Questions for the conversation
-
-<Only if the purpose is a conversation with the person or the user asked for them. Group them by topic. Each question cites its evidence and asks for facts.>
-
-### Volume and consistency
-1. <question> (<evidence>)
-
-### Authorship
-### Quality
-### Way of working
-### Closing
-1. If you had to show one contribution of yours that the team wouldn't have had without you, which would it be? Show it in the code.
-2. Which part of your work isn't in this repository, and where is the evidence?
-
----
-
 ## Appendices
 
 <The full tables from `summary.md`, so the report doesn't depend on any other file.>

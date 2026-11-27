@@ -138,6 +138,18 @@ PEM_RE = re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----")
 TRIVIAL = {"{", "}", "};", ");", "(", ")", "]", "[", "*/", "/*", "*", "//", "#", "---", "```", "<?php", "?>", "end", "else", "else {", "} else {"}
 
 
+def path_affinity(a, b):
+    """Number of matching path segments, from the end and from the start."""
+    pa, pb = a.split("/"), b.split("/")
+    tail = 0
+    while tail < min(len(pa), len(pb)) and pa[-1 - tail] == pb[-1 - tail]:
+        tail += 1
+    head = 0
+    while head < min(len(pa), len(pb)) - tail and pa[head] == pb[head]:
+        head += 1
+    return tail * 2 + head
+
+
 def significant(line):
     s = line.strip()
     return len(s) > 3 and s not in TRIVIAL
@@ -339,7 +351,8 @@ def analyze(args):
                 if score >= 0.6 and (not f["similar_later"] or score > f["similar_later"]["score"]):
                     f["similar_later"] = {"score": round(score, 3), "path": path, "commit": sha[:8], "date": date[:10], "author": email}
             seen, best = set(), (0.0, None)
-            for date, path, blob, email, sha in sorted(cands, reverse=True):
+            # closest paths first (same folder structure), then most recent
+            for date, path, blob, email, sha in sorted(cands, key=lambda x: (-path_affinity(x[1], f["path"]), -parse_date(x[0]).timestamp())):
                 if blob in seen:
                     continue
                 seen.add(blob)

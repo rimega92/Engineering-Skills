@@ -268,18 +268,17 @@ Gives an honest, data-backed picture of what a developer really contributed to a
 **When to use it**
 
 - To track or evaluate a person's contribution to a project with data instead of impressions.
-- To prepare a performance or feedback conversation, with facts and evidence-based questions.
+- To have a factual basis before a performance or feedback conversation.
 - To find out whether a high line count is their own work or templates and copies.
 
 **How to use it**
 
 - Ask for it: _"Analyze the contribution of john.smith@company.com to this repository"_, _"Run a detailed blame on John Smith and score his contribution"_, _"What did Mary really do in this repo since June?"_.
-- To prepare a conversation: _"Analyze John's contribution and include questions to discuss with him"_.
 - With a different role: _"Analyze Anna's contribution; she's in DevOps"_.
 
 **How it works**
 
-- Lists the repository's authors to find all the person's identities (several names or emails) and asks you, in a single message, whatever isn't clear: identities, branch, period, role, purpose, exclusions and where to save the report. Each question comes with a default answer.
+- Lists the repository's authors to find all the person's identities (several names or emails) and asks you, in a single message, whatever isn't clear: identities, branch, period, role, exclusions and where to save the report. Each question comes with a default answer.
 - Runs `scripts/collect_contribution.py`, which only reads the repository with git and extracts the real data:
   - commits, PRs and lines added and deleted;
   - the category of each file (production or test code, deployment, build, configuration, documentation, templates, standard files or files that shouldn't be in git);
@@ -290,7 +289,7 @@ Gives an honest, data-backed picture of what a developer really contributed to a
 - Reviews commit by commit: reads the diffs, confirms copies against their source, tells templates from copies, looks for bugs in their own code and follows the fate of that code.
 - Looks for what git doesn't show (PR reviews with `gh`, `az` or `glab` if available) and notes it as a limitation if it can't verify it.
 - Scores six dimensions from 1 to 5 (volume of own work, complexity and value, quality, durability, tests and consistency), with role-based weights, and gives a score from 0 to 100, a level and a confidence.
-- Writes the report: verdict, figures, what the contribution is made of, comparison with the team, activity over time, the fate of their code, commit-by-commit analysis, quality findings, what they did contribute, the score, what the analysis can't see and, on request, questions for the conversation. Charts come in Mermaid and as text bars.
+- Writes the report: verdict, figures, what the contribution is made of, comparison with the team, activity over time, the fate of their code, commit-by-commit analysis, quality findings, what they did contribute, the score and what the analysis can't see. It's the analysis only: it includes no questions for the person. Charts come in Mermaid and as text bars.
 - Delivers a single file: the report in `.contribution-analysis/<person>-<date>.md` at the repository root, or wherever you say, with all the data tables in its appendices. The script's working files go to a temporary folder that's deleted at the end. It gives you the relative and absolute path and keeps the report out of git: the first time, it adds `.contribution-analysis/` to `.gitignore` and reminds you to commit that change.
 
 **Files**

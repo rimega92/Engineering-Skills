@@ -175,22 +175,6 @@ Estructura del informe de aporte. El informe es el único entregable: un solo ar
 
 ---
 
-## 11. Preguntas para la conversación
-
-<Solo si el propósito es una conversación con la persona o el usuario las pidió. Agrúpalas por tema. Cada pregunta cita su evidencia y pide hechos.>
-
-### Volumen y constancia
-1. <pregunta> (<evidencia>)
-
-### Autoría
-### Calidad
-### Forma de trabajo
-### Cierre
-1. Si tuvieras que mostrar un solo aporte tuyo que el equipo no habría tenido sin ti, ¿cuál sería? Muéstralo en el código.
-2. ¿Qué parte de tu trabajo no está en este repositorio y dónde está la evidencia?
-
----
-
 ## Anexos
 
 <Las tablas completas de `summary.md`, para que el informe no dependa de ningún otro archivo.>
