@@ -87,7 +87,8 @@ class Git:
 JUNK = [r"(^|/)\.DS_Store$", r"\.log(\.\d+)?$", r"\.lck$", r"\.tmp$", r"\.swp$", r"\.class$", r"\.pyc$",
         r"(^|/)node_modules/", r"(^|/)target/", r"(^|/)dist/", r"(^|/)out/", r"(^|/)bin/(?!.*\.(sh|py)$)",
         r"(^|/)\.idea/", r"\.iml$", r"(^|/)coverage/", r"(^|/)\.gradle/", r"(^|/)build/(?!.*\.(gradle|kts)$)",
-        r"(^|/)\.env(\..*)?$", r"\.(jks|p12|pem|key)$", r"(^|/)__pycache__/", r"(^|/)\.vscode/"]
+        r"(^|/)\.env(\..*)?$", r"\.(jks|p12|pem|key)$", r"(^|/)__pycache__/", r"(^|/)\.vscode/",
+        r"(^|/)(test|tests|build|gradle|mvn|maven|npm|yarn|console)[_-]?(out|output|log|result|results)\.txt$"]  # tool output dumps
 BOILERPLATE = [r"(^|/)gradlew(\.bat)?$", r"(^|/)gradle-wrapper\.(jar|properties)$", r"(^|/)mvnw(\.cmd)?$",
                r"(^|/)\.mvn/", r"(^|/)\.gitignore$", r"(^|/)\.gitattributes$", r"(^|/)\.editorconfig$",
                r"(^|/)LICENSE(\..*)?$", r"(^|/)lombok\.config$", r"(^|/)package-lock\.json$", r"(^|/)yarn\.lock$",
@@ -158,10 +159,10 @@ _SECRET_KEY = r"(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?key|token
 SECRET_CONFIG_RE = re.compile(_SECRET_KEY + r"[\"']?(?![$#%{<]|\s|$)[^\s\"'`]{6,}")
 SECRET_CODE_RE = re.compile(_SECRET_KEY + r"[\"'](?![$#%{<])[^\s\"'`]{6,}[\"']")
 PEM_RE = re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----")
-EMPTY_TYPE_RE = re.compile(r"\b(class|interface|record|struct|enum|object)\s+\w+[^{;]*\{\s*\}", re.S)
+EMPTY_TYPE_RE = re.compile(r"\b(class|interface|struct|enum|object)\s+\w+[^{;(]*\{\s*\}", re.S)
 TEST_CASE_RE = re.compile(r"(@Test\b|@ParameterizedTest\b|\bdef test_\w+|\bfunc Test\w+|\b(it|test)\s*\(\s*['\"`]|\[Fact\]|\[Test\]|\bfunc test\w+\s*\()")
-ASSERT_RE = re.compile(r"(\bassert\w*|\bexpect\w*\s*\(|\bverify\w*\s*\(|\.should\w*|\bXCTAssert\w*|\bAssert\.\w+|\.to(Be|Equal|Have)\w*|"
-                       r"\bthen\(|assertThat|\.expect\w*\(|\bcheck\w*\(|\brequire\.)")
+ASSERT_RE = re.compile(r"([aA]ssert\w*|[eE]xpect\w*\s*\(|[vV]erify\w*\s*\(|\.should\w*|\bXCTAssert\w*|\.to(Be|Equal|Have)\w*|"
+                       r"\bthen\(|\bcheck\w*\(|\brequire\.|\bfail\s*\()")
 TRIVIAL = {"{", "}", "};", ");", "(", ")", "]", "[", "*/", "/*", "*", "//", "#", "---", "```", "<?php", "?>", "end", "else",
            "else {", "} else {"}
 SERVICE_RE = re.compile(r"(\[bot\]|\bbot\b|-bot\b|^bot|jenkins|dependabot|renovate|github-actions|azure-?pipelines|build ?service|"
@@ -448,9 +449,11 @@ def copy_analysis(commit, own_emails, index, linesets, added, detail):
         # standard files (gradlew, lockfiles...) are boilerplate already; their comments are not template markers
         f["template_markers"] = 0 if f["category"] == "boilerplate" else sum(1 for l in lines if TEMPLATE_MARKERS.search(l))
         if detail:
-            sre = SECRET_CODE_RE if f["category"] in ("prod_code", "test_code") else SECRET_CONFIG_RE
+            # by file type, not category: code (also in acceptance-test/ or fixtures) only counts quoted literals
+            is_code = f["path"].rsplit(".", 1)[-1].lower() in CODE_EXT if "." in os.path.basename(f["path"]) else False
+            sre = SECRET_CODE_RE if is_code else SECRET_CONFIG_RE
             f["secret_suspects"] = sum(1 for l in lines if sre.search(l) or PEM_RE.search(l))
-            f["similar_later"] = None
+            f["similar_later"], f["replicated_later"] = None, 0
         if not sig or f["binary"]:
             continue
         same_name = [x for x in index.get(os.path.basename(f["path"]), []) if x[3] not in own_emails]
@@ -471,11 +474,16 @@ def copy_analysis(commit, own_emails, index, linesets, added, detail):
         f["copy_score"], f["copy_source"] = round(best[0], 3), best[1]
         if detail:
             later = [x for x in same_name if parse_date(x[0]) >= cdate and x[1] != f["path"]]
-            for date, path, blob, email, sha in sorted(later)[:20]:
+            replicas = set()
+            for date, path, blob, email, sha in sorted(later)[:40]:
                 content = linesets.get(blob)
                 score = sum(1 for l in sig if l in content) / len(sig)
+                if score >= 0.9:
+                    replicas.add(path)
                 if score >= 0.6 and (not f["similar_later"] or score > f["similar_later"]["score"]):
                     f["similar_later"] = {"score": round(score, 3), "path": path, "commit": sha[:8], "date": date[:10], "author": email}
+            # the same file showing up later, almost unchanged, in other places by other people: usually a template
+            f["replicated_later"] = len(replicas)
 
 
 def generated_paths(git, paths):
@@ -843,12 +851,15 @@ def analyze(args):
         if c["add"] >= 1000:
             signals.append({"type": "large_commit", "commit": c["short"], "added": c["add"], "copy_ratio": c["copy_ratio"]})
         for f in c["files"]:
-            if f["category"] == "junk":
+            if f["category"] == "junk" and (c["sha"], f["path"]) in new_blob:  # added or changed, not deleted
                 signals.append({"type": "junk_file", "commit": c["short"], "path": f["path"], "added": f["add"]})
             if f.get("secret_suspects"):
                 signals.append({"type": "possible_secret", "commit": c["short"], "path": f["path"], "lines": f["secret_suspects"]})
             if f.get("template_markers"):
                 signals.append({"type": "template_markers", "commit": c["short"], "path": f["path"], "lines": f["template_markers"]})
+            if f.get("own") and f.get("replicated_later", 0) >= 2:
+                signals.append({"type": "replicated_later", "commit": c["short"], "path": f["path"], "count": f["replicated_later"],
+                                "added": f["add"]})
             if f.get("empty_types"):
                 signals.append({"type": "empty_type", "commit": c["short"], "path": f["path"], "count": f["empty_types"]})
             if f.get("test_cases") and f["assertions"] < f["test_cases"]:
@@ -973,7 +984,8 @@ L = {
         "sig": {"repeated_subject_same_day": "Asunto repetido el mismo día", "large_commit": "Commit grande",
                 "junk_file": "Archivo que no debería estar en git", "possible_secret": "Posible secreto (solo ubicación)",
                 "template_markers": "Marcadores de plantilla", "empty_type": "Clase o tipo vacío",
-                "weak_test": "Prueba con menos aserciones que casos", "self_fix": "Corrige un commit propio"},
+                "weak_test": "Prueba con menos aserciones que casos", "self_fix": "Corrige un commit propio",
+                "replicated_later": "Propio, pero repetido casi igual después en otros sitios (¿plantilla?)"},
     },
     "en": {
         "cat": {"prod_code": "Production code", "test_code": "Test code", "deploy_ci": "Deployment / CI", "build": "Build",
@@ -1008,7 +1020,8 @@ L = {
         "sig": {"repeated_subject_same_day": "Subject repeated on the same day", "large_commit": "Large commit",
                 "junk_file": "File that shouldn't be in git", "possible_secret": "Possible secret (location only)",
                 "template_markers": "Template markers", "empty_type": "Empty class or type",
-                "weak_test": "Test with fewer assertions than cases", "self_fix": "Fixes one of their own commits"},
+                "weak_test": "Test with fewer assertions than cases", "self_fix": "Fixes one of their own commits",
+                "replicated_later": "Own, but repeated almost unchanged later elsewhere (template?)"},
     },
 }
 
@@ -1153,6 +1166,8 @@ def render_annex(d):
             "possible_secret": lambda: "`%s` (%d)" % (s["path"], s["lines"]),
             "template_markers": lambda: "`%s` (%d)" % (s["path"], s["lines"]),
             "empty_type": lambda: "`%s` (%d)" % (s["path"], s["count"]),
+            "replicated_later": lambda: "`%s` (+%d, %d copias)" % (s["path"], s["added"], s["count"]) if lang == "es"
+                                         else "`%s` (+%d, %d copies)" % (s["path"], s["added"], s["count"]),
             "weak_test": lambda: "`%s` (%d / %d)" % (s["path"], s["tests"], s["assertions"]),
             "self_fix": lambda: "→ `%s`: %s" % (s["fixes"], esc(s["subject"])),
         }[t]()

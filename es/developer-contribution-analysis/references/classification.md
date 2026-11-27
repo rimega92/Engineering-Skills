@@ -37,6 +37,13 @@ Reglas:
 
 El script aplica esta tabla con `--role`. Marca un archivo como **propio** cuando está en las categorías principales del rol, tiene menos del 50 % de copia y no tiene aspecto de plantilla, y como **plantilla** cuando tiene marcadores de plantilla o es pequeño y solo tiene tipos vacíos. Mide igual a todas las personas del equipo. Son reglas, no lectura del código: confírmalas con el diff y corrígelas en el análisis cuando no acierten.
 
+## Casos que el script no resuelve solo
+
+- **Quien crea los primeros componentes.** Si la persona fue la primera en generar un componente con una plantilla (scaffold, `init`), los archivos de la plantilla que no tienen marcadores (por ejemplo, la clase principal o una prueba de configuración) salen como propios: no había nada anterior con qué compararlos. El script los marca con la señal "Propio, pero repetido casi igual después" cuando reaparecen en dos o más sitios. Confírmalo en el diff, descuéntalos del trabajo propio y di cuántas líneas descontaste.
+- **Código temporal en la rama principal.** Código escrito para avanzar mientras falta algo (una firma de integración, un backend) o para pasar una puerta de calidad (cobertura de Sonar). Clasifícalo como 🟨 provisional, di quién lo reemplazó y no lo cuentes como un defecto si se hizo a propósito y se reemplazó.
+- **Pruebas de aceptación.** Viven en `acceptance-test/` y el script las cuenta como plantillas y datos de prueba, igual para todo el equipo. No son trabajo propio para D1, pero sí cuentan para D5 y van en "Lo que sí aportó".
+- **Código cambiado para esquivar una herramienta.** Por ejemplo, partir una cadena para que un escáner deje de avisar. Anótalo como hallazgo de forma de trabajo: lo correcto es marcar el falso positivo en la herramienta.
+
 ## Problemas de calidad que buscar
 
 Revisa el código propio (🟩, 🟨, 🟦) con esta lista. Cada problema que encuentres va al informe con el commit, la ruta y, si aplica, la línea.

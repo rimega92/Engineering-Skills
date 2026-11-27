@@ -67,6 +67,45 @@ GRADLEW = """#!/bin/sh
 exec java -classpath "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "$@"
 """
 LIMITS = "request-limit: 100\ntimeout-ms: 1500\nretries: 3\n"
+REQUEST_DTO = """package app;
+
+public record LimitRequest(Data data) {
+    public record Data(String channel, int amount) {
+    }
+}
+"""
+ACCEPTANCE_TEST = """package app;
+
+class AvailabilityAcceptanceTest {
+    void databaseExists() {
+        var secret = databaseSecret();
+        var password = secret.getPassword();
+    }
+}
+"""
+CONTROLLER_TEST = """package app;
+
+import org.junit.jupiter.api.Test;
+
+class LimitControllerTest {
+    @Test
+    void acceptsValidRequest() throws Exception {
+        mockMvc.perform(post("/limits")).andExpect(status().isOk());
+    }
+}
+"""
+MAIN_APP = """package app;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class MainApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(MainApplication.class, args);
+    }
+}
+"""
 CONFIG = "\n".join(["server:", "  port: 8080", "app:"] + ["  key%d: value-%d" % (i, i) for i in range(10)] + [""])
 
 
@@ -108,11 +147,15 @@ def build_repo(path):
     r = Repo(path)
     r.commit(ALICE, "Create app", {"svc-a/src/main/java/app/App.java": APP, "svc-a/deploy/config/app.yaml": CONFIG,
                                    ".gitattributes": "gen/** linguist-generated\n"})
-    r.commit(BOB, "Create service b", {"svc-b/src/main/java/app/App.java": APP})                       # copy of Alice's file
+    r.commit(BOB, "Create service b", {"svc-b/src/main/java/app/App.java": APP,                         # copy of Alice's file
+                                       "svc-b/src/main/java/app/MainApplication.java": MAIN_APP})       # first one: a template
+    r.commit(ALICE, "Create service c", {"svc-c/src/main/java/app/MainApplication.java": MAIN_APP})
+    r.commit(SVC, "Create service d", {"svc-d/src/main/java/app/MainApplication.java": MAIN_APP})
     r.commit(BOB, "Add calculator", {"svc-b/src/main/java/app/Calc.java": CALC,                          # own code
                                      "svc-b/src/test/java/app/CalcTest.java": CALC_TEST})                # tests without assertions
     r.commit(BOB, "Add listener", {"svc-b/src/main/java/app/Listener.java": LISTENER,                    # template
-                                   "svc-b/app.log": "started\nconnected\nstopped\n"})                    # junk
+                                   "svc-b/app.log": "started\nconnected\nstopped\n",                     # junk
+                                   "svc-b/test_out.txt": "> Task :test\nBUILD SUCCESSFUL\n"})             # junk: tool output
     r.git("mv", "svc-a/deploy/config", "svc-a/deploy/cfg")
     r.commit(BOB, "Rename config folder")                                                                # rename only
     r.commit(BOB, "fix: port", {"svc-a/deploy/cfg/app.yaml": CONFIG.replace("8080", "9090")})           # not a self-fix
@@ -126,6 +169,11 @@ def build_repo(path):
     r.commit(BOB, "fix: burst limit", {"svc-b/limits.yaml": LIMITS + "burst-limit: 25\n"})           # fixes their own line
     r.commit(BOB, "fix: request limit", {"svc-b/limits.yaml":                                          # same file, Alice's line
                                           LIMITS.replace("request-limit: 100", "request-limit: 120") + "burst-limit: 25\n"})
+    r.commit(BOB, "Add limit request", {"svc-b/src/main/java/app/LimitRequest.java": REQUEST_DTO,          # records are not empty types
+                                        "svc-b/src/test/java/app/LimitControllerTest.java": CONTROLLER_TEST,   # andExpect is an assertion
+                                        "svc-b/deployment/acceptance-test/src/test/java/app/AvailabilityAcceptanceTest.java":
+                                            ACCEPTANCE_TEST})                                                     # variables, not secrets
+    r.commit(BOB, "Remove log", remove=["svc-b/app.log"])                                              # cleaning junk is not junk
     r.git("checkout", "-q", "-b", "feature")
     r.commit(BOB, "Add feature", {"svc-b/src/main/java/app/Feature.java":
                                   "package app;\n\npublic class Feature {\n    public boolean enabled(int flags) { return (flags & 0x4) != 0; }\n}\n"})
@@ -169,7 +217,7 @@ class CollectContributionTest(unittest.TestCase):
         self.assertTrue(filecmp.cmp(SCRIPT, OTHER, shallow=False))
 
     def test_counts_commits_of_all_identities(self):
-        self.assertEqual(self.data["totals"]["commits"], 12)
+        self.assertEqual(self.data["totals"]["commits"], 14)
         self.assertEqual({i["email"] for i in self.data["identities"]}, {BOB[1], BOB_ALIAS[1]})
 
     def test_detects_copy_and_its_source(self):
@@ -187,7 +235,9 @@ class CollectContributionTest(unittest.TestCase):
         self.assertFalse(f["own"])
 
     def test_junk_and_weak_tests(self):
-        self.assertTrue(any(s["path"] == "svc-b/app.log" for s in self.signals("junk_file")))
+        self.assertTrue(any(s["path"] == "svc-b/test_out.txt" for s in self.signals("junk_file")))
+        junk = [s for s in self.signals("junk_file") if s["path"] == "svc-b/app.log"]
+        self.assertEqual([self.subject_of(s["commit"]) for s in junk], ["Add listener"])  # not "Remove log"
         weak = [s for s in self.signals("weak_test") if s["path"].endswith("CalcTest.java")]
         self.assertEqual(len(weak), 1)
         self.assertEqual((weak[0]["tests"], weak[0]["assertions"]), (2, 0))
@@ -198,6 +248,19 @@ class CollectContributionTest(unittest.TestCase):
     def test_self_fix_only_when_it_changes_their_own_lines(self):
         fixes = {self.subject_of(s["commit"]): self.subject_of(s["fixes"]) for s in self.signals("self_fix")}
         self.assertEqual(fixes, {"fix: burst limit": "Add burst limit"})  # not "fix: port" (after a rename) nor "fix: request limit"
+
+    def test_records_are_not_empty_types_and_andexpect_is_an_assertion(self):
+        self.assertFalse(any(s["path"].endswith("LimitRequest.java") for s in self.signals("empty_type")))
+        self.assertFalse(any(s["path"].endswith("LimitControllerTest.java") for s in self.signals("weak_test")))
+        self.assertEqual(self.file("svc-b/src/test/java/app/LimitControllerTest.java")["assertions"], 1)
+
+    def test_code_variables_are_not_secrets(self):
+        self.assertEqual(self.signals("possible_secret"), [])
+
+    def test_own_file_replicated_later_is_flagged_as_possible_template(self):
+        flagged = [s["path"] for s in self.signals("replicated_later")]
+        self.assertEqual(flagged, ["svc-b/src/main/java/app/MainApplication.java"])
+        self.assertNotIn("svc-b/src/main/java/app/Calc.java", flagged)
 
     def test_no_template_markers_in_standard_files(self):
         self.assertEqual(self.file("svc-b/gradlew")["template_markers"], 0)
