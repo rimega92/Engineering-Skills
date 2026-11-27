@@ -316,7 +316,7 @@ Gives an honest, data-backed picture of what a developer really contributed to a
 
 - Claude Code: tested end to end on a Java microservices monorepo, with good results.
 - OpenAI Codex and GitHub Copilot: not tested yet.
-- The script has automated tests with a synthetic repository, run on GitHub Actions with Python 3.9 and 3.12.
+- The script has automated tests with a synthetic repository, which pass on Python 3.9, 3.13 and 3.15.
 
 ## Repository structure
 
@@ -331,7 +331,6 @@ Engineering-Skills/
 │       └── scripts/       # Supporting scripts, in the skills that have them
 ├── es/                    # Spanish versions, same folders as en/
 ├── tests/                 # Automated tests for the skills' scripts
-├── .github/workflows/     # GitHub Actions that run those tests
 ├── AGENTS.md              # Repository conventions for AI agents
 ├── CLAUDE.md              # Imports AGENTS.md for Claude Code
 ├── LICENSE
@@ -339,7 +338,7 @@ Engineering-Skills/
 └── README.es.md           # Spanish README
 ```
 
-Each skill is tested by hand in the tools (see the **Tested** list in each skill's section). The supporting scripts also have automated tests in `tests/`, which GitHub Actions runs on every pull request that changes them. To run them locally: `python3 -m unittest discover -s tests/developer-contribution-analysis -v`.
+Each skill is tested by hand in the tools (see the **Tested** list in each skill's section). The supporting scripts also have automated tests in `tests/`. Run them after changing a script: `python3 -m unittest discover -s tests/developer-contribution-analysis -v`.
 
 ## Installation
 

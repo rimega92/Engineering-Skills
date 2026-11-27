@@ -316,7 +316,7 @@ Hace una radiografía del aporte real de un desarrollador a un repositorio git, 
 
 - Claude Code: probada de principio a fin en un monorepo Java de microservicios, con buenos resultados.
 - OpenAI Codex y GitHub Copilot: todavía sin probar.
-- El script tiene pruebas automáticas con un repositorio sintético, que se ejecutan en GitHub Actions con Python 3.9 y 3.12.
+- El script tiene pruebas automáticas con un repositorio sintético, que pasan en Python 3.9, 3.13 y 3.15.
 
 ## Estructura del repositorio
 
@@ -331,7 +331,6 @@ Engineering-Skills/
 │       └── scripts/       # Scripts de apoyo, en las skills que los tienen
 ├── es/                    # Versiones en español, mismas carpetas que en/
 ├── tests/                 # Pruebas automáticas de los scripts de las skills
-├── .github/workflows/     # GitHub Actions que ejecutan esas pruebas
 ├── AGENTS.md              # Convenciones del repositorio para agentes de IA
 ├── CLAUDE.md              # Importa AGENTS.md para Claude Code
 ├── LICENSE
@@ -339,7 +338,7 @@ Engineering-Skills/
 └── README.es.md           # Este archivo
 ```
 
-Cada skill se prueba a mano en las herramientas (consulta la lista **Probada** en la sección de cada skill). Los scripts de apoyo tienen además pruebas automáticas en `tests/`, que GitHub Actions ejecuta en cada pull request que los cambia. Para ejecutarlas en local: `python3 -m unittest discover -s tests/developer-contribution-analysis -v`.
+Cada skill se prueba a mano en las herramientas (consulta la lista **Probada** en la sección de cada skill). Los scripts de apoyo tienen además pruebas automáticas en `tests/`. Ejecútalas después de cambiar un script: `python3 -m unittest discover -s tests/developer-contribution-analysis -v`.
 
 ## Instalación
 
