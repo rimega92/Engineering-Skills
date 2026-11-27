@@ -35,6 +35,8 @@ Reglas:
 | Líder técnico | Código propio, más revisiones de PR, diseño y decisiones técnicas (fuera de git: consúltalas en el paso 4) | Configuración |
 | Practicante o junior | Igual que desarrollador; el informe puede comentar las expectativas del nivel, pero las cifras no cambian | Igual que desarrollador |
 
+El script aplica esta tabla con `--role`. Marca un archivo como **propio** cuando está en las categorías principales del rol, tiene menos del 50 % de copia y no tiene aspecto de plantilla, y como **plantilla** cuando tiene marcadores de plantilla o es pequeño y solo tiene tipos vacíos. Mide igual a todas las personas del equipo. Son reglas, no lectura del código: confírmalas con el diff y corrígelas en el análisis cuando no acierten.
+
 ## Problemas de calidad que buscar
 
 Revisa el código propio (🟩, 🟨, 🟦) con esta lista. Cada problema que encuentres va al informe con el commit, la ruta y, si aplica, la línea.

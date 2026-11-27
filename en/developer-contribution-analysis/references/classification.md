@@ -35,6 +35,8 @@ Rules:
 | Tech lead | Own code, plus PR reviews, design and technical decisions (outside git: query them in step 4) | Configuration |
 | Intern or junior | Same as developer; the report may comment on what the level is expected to deliver, but the figures don't change | Same as developer |
 
+The script applies this table with `--role`. It flags a file as **own** when it's in the role's main categories, has less than 50% copy and isn't template-like, and as a **template** when it has template markers or is small and has only empty types. It measures everyone on the team the same way. These are rules, not a reading of the code: confirm them with the diff and correct them in the analysis when they're wrong.
+
 ## Quality problems to look for
 
 Review their own code (🟩, 🟨, 🟦) against this list. Every problem you find goes into the report with the commit, the path and, where it applies, the line.

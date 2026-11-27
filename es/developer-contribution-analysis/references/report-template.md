@@ -6,7 +6,7 @@ Estructura del informe de aporte. El informe es el único entregable: un solo ar
 
 - **El veredicto va primero:** la persona que lee debe tener la conclusión en las primeras líneas.
 - **Cada cifra se puede rastrear** hasta los anexos del informe o un comando de git.
-- **Autocontenido:** los anexos llevan las tablas completas de `summary.md`. Nada remite a archivos que no se entregan.
+- **Autocontenido:** los anexos son el contenido de `annex.md` tal cual, en el idioma del informe. Nada remite a archivos que no se entregan.
 - **Cada hallazgo tiene evidencia:** `sha` del commit, `ruta` o `ruta:línea`, número de PR.
 - **Las gráficas salen de `charts.md`** o de valores de `data.json`. Pon cada gráfica en Mermaid y, debajo, la versión en barras de texto, que se ve en cualquier visor.
 - **Lenguaje directo y sin adjetivos sobre la persona.** "Copió", "no hay pruebas", "lo reescribió otra persona", "0 commits en 6 semanas". Nada de "lamentablemente", "parece que", "podría mejorar" ni "es flojo".
@@ -53,6 +53,22 @@ Estructura del informe de aporte. El informe es el único entregable: un solo ar
 
 ---
 
+## Cambios desde el informe anterior
+
+<Solo si hay un informe anterior de la misma persona. Compara con su marca `<!-- developer-contribution-analysis: … -->`.>
+
+| | Informe anterior (<fecha>, `<sha>`) | Ahora | Cambio |
+|---|---|---|---|
+| Nota | <n> | <n> | <±n> |
+| Commits | <n> | <n> | <±n> |
+| Trabajo propio agregado | <n> | <n> | <±n> |
+| Trabajo propio vigente | <n> | <n> | <±n> |
+| Semanas con commits | <n> | <n> | <±n> |
+
+<Hallazgos nuevos y hallazgos que ya se resolvieron, con evidencia.>
+
+---
+
 ## 1. Cifras
 
 | Métrica | Valor |
@@ -62,6 +78,7 @@ Estructura del informe de aporte. El informe es el único entregable: un solo ar
 | PRs con sus commits / completados por la persona | <n> / <n> |
 | Líneas agregadas / eliminadas | +<n> / −<n> |
 | Líneas de trabajo propio agregadas (sin plantillas, copias ni basura) | <n> (<%> del total) |
+| PRs propios en la plataforma / PRs de otros que revisó | <n> / <n>, o "no consultado" |
 | Líneas suyas vigentes hoy | <n> de <total del repositorio> (<%>) |
 | De esas, trabajo propio | <n> |
 | Semanas con commits / semanas del periodo | <n> / <n> |
@@ -89,14 +106,14 @@ Estructura del informe de aporte. El informe es el único entregable: un solo ar
 
 ## 3. Comparación con el equipo
 
-<Gráficas: commits, líneas vigentes y código de producción vigente por autor (charts.md).>
+<Gráficas: commits, líneas vigentes y trabajo propio vigente por autor (charts.md).>
 
-| Autor | Commits | Líneas vigentes | Código de producción vigente | Código de pruebas vigente |
-|---|---|---|---|---|
-| **<persona>** | … | … | … | … |
-| <otro autor> | … | … | … | … |
+| Autor | Commits | Líneas vigentes | Trabajo propio agregado | Trabajo propio vigente | Durabilidad |
+|---|---|---|---|---|---|
+| **<persona>** | … | … | … | … | … |
+| <otro autor> | … | … | … | … | … |
 
-<Una o dos frases: qué muestra la comparación. Recuerda que las cifras del equipo incluyen sus propias plantillas.>
+<Una o dos frases: qué muestra la comparación. El trabajo propio se mide igual para todos; las líneas vigentes incluyen plantillas y copias.>
 
 ---
 
@@ -177,51 +194,14 @@ Estructura del informe de aporte. El informe es el único entregable: un solo ar
 
 ## Anexos
 
-<Las tablas completas de `summary.md`, para que el informe no dependa de ningún otro archivo.>
+<El contenido de `annex.md` tal cual, con la columna "Revisión" del anexo F completada (Confirmado o Falso positivo, con el motivo) y la marca `<!-- developer-contribution-analysis: … -->` al final. Trae estas secciones:>
 
-### A. Todos los commits
-
-| Commit | Fecha | + | − | % copia | Vigentes hoy | Clase | Asunto |
-|---|---|---|---|---|---|---|---|
-
-### B. Archivos por commit y su origen
-
-<Una tabla por commit: archivo, categoría, +, −, % copia, origen (autor, commit, fecha, ruta), archivo parecido posterior, marcadores de plantilla, posibles secretos.>
-
-### C. Destino de los archivos que tocó
-
-| Archivo | Categoría | + suyas | Lo creó | Existe hoy | Suyas hoy / total | Otros autores hoy o quién lo borró |
-|---|---|---|---|---|---|---|
-
-### D. Equipo
-
-| Autor | Correo | Commits | + | − | Primero | Último | Vigentes | Producción vigente | Pruebas vigente |
-|---|---|---|---|---|---|---|---|---|---|
-
-### E. Pull requests
-
-| Merge | Fecha | PR | Completado por | Sus commits / total | Título |
-|---|---|---|---|---|---|
-
-<Otros merges con sus commits (sincronizaciones de rama o sin número de PR).>
-
-### F. Señales del script
-
-| Tipo | Commit | Detalle | Revisión |
-|---|---|---|---|
-| <tipo> | `<sha>` | <ruta o asunto> | <Confirmado | Falso positivo: por qué> |
-
-### G. Líneas vigentes por archivo
-
-| Líneas | Archivo |
-|---|---|
-
-### H. Cómo reproducir
-
-```bash
-python3 -I <carpeta-de-la-skill>/scripts/collect_contribution.py --repo <repo> --author <correo> [...] --out "$(mktemp -d)"
-git log --branches --remotes --tags --no-merges --author=<correo> --numstat
-git show <sha>
-git blame -w -M --line-porcelain <archivo> | grep '^author-mail' | sort | uniq -c
-```
+- A. Todos los commits
+- B. Archivos por commit y su origen
+- C. Destino de los archivos que tocó
+- D. Equipo
+- E. Pull requests (y, si se consultó, los PRs de la plataforma)
+- F. Señales del script
+- G. Líneas vigentes por archivo
+- H. Cómo reproducir
 ````

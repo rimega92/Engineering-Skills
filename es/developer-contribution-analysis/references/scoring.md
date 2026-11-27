@@ -4,12 +4,12 @@ Cómo calificar el aporte de una persona en un repositorio. Seis dimensiones de 
 
 ## Datos de referencia del equipo
 
-Varias dimensiones comparan a la persona con el equipo. Calcula estas referencias con la tabla `team` de `data.json`:
+Varias dimensiones comparan a la persona con el equipo. El script calcula estas referencias y las deja en la sección "Scoring inputs" de `summary.md`:
 
-- **Personas activas:** autores con al menos 5 commits en el periodo, sin contar a la persona analizada ni a las cuentas de servicio o bots (`svc…`, `bot`, `jenkins`, `azure-pipelines`, `dependabot`…).
+- **Personas activas:** autores con al menos 5 commits en el periodo, sin contar a la persona analizada ni a las cuentas de servicio o bots (`svc…`, `bot`, `jenkins`, `azure-pipelines`, `dependabot`…). Revisa la lista: si el script tomó por persona una cuenta de servicio, o al revés, recalcula la mediana con la tabla D de los anexos.
 - **Mediana del equipo:** la mediana de una métrica entre las personas activas. Si hay menos de 2, no hay comparación: califica con las anclas absolutas y dilo.
 
-Las cifras del equipo incluyen sus propias plantillas y copias, porque el script solo detecta copia para la persona analizada. La comparación favorece a la persona, así que es conservadora.
+El trabajo propio se mide igual para todas las personas: líneas en las categorías propias del rol, con menos del 50 % de copia y sin aspecto de plantilla. Con `--no-team-copy`, la copia solo se detecta para la persona analizada; en ese caso, las cifras del equipo incluyen sus plantillas y copias, y la comparación favorece a la persona. Dilo en el informe.
 
 ## Dimensiones
 
@@ -17,7 +17,7 @@ Las cifras del equipo incluyen sus propias plantillas y copias, porque el script
 
 Cuánto trabajo propio produjo, sin contar plantillas, copias, basura ni archivos estándar. Qué cuenta como propio depende del rol (`references/classification.md`).
 
-**Métrica:** líneas vigentes de trabajo propio de la persona (por ejemplo, para un desarrollador, código de producción y de pruebas con copia < 50%) frente a la mediana del equipo de líneas vigentes en las mismas categorías.
+**Métrica:** líneas vigentes de trabajo propio de la persona frente a la mediana del equipo, medida igual (`d1` en `summary.md`, con la nota sugerida). Si en la revisión commit por commit corregiste qué es propio, recalcula con tus cifras.
 
 | Nota | Ancla |
 |---|---|
@@ -55,7 +55,7 @@ Qué tan correcto y limpio es lo que entregó. Usa la lista de problemas de `ref
 
 Cuánto de su trabajo propio sigue en pie y si otros tuvieron que rehacerlo.
 
-**Métrica:** porcentaje de sus líneas de trabajo propio (copia < 50%, sin basura) que siguen vigentes, y el destino de su código (`references/classification.md`).
+**Métrica:** trabajo propio vigente / trabajo propio agregado (`d4` en `summary.md`, con la mediana del equipo y la nota sugerida), y el destino de su código (`references/classification.md`).
 
 | Nota | Ancla |
 |---|---|
@@ -85,7 +85,7 @@ Si escribió pruebas que verifican el comportamiento de su código.
 
 Si aportó de forma sostenida durante el tiempo en que debía hacerlo.
 
-**Métrica:** semanas con al menos un commit, frente a las semanas del periodo en que el repositorio tuvo actividad mientras la persona estaba asignada (por defecto, desde su primer commit hasta el último commit del repositorio en el periodo).
+**Métrica:** semanas con al menos un commit, frente a las semanas del periodo en que el repositorio tuvo actividad mientras la persona estaba asignada (por defecto, desde su primer commit hasta el último commit del repositorio en el periodo). Está en `d6` en `summary.md`, con los días sin commits al final y la nota sugerida, que ya aplica el tope de abajo.
 
 | Nota | Ancla |
 |---|---|
@@ -110,7 +110,7 @@ Si lleva más de 4 semanas sin commits mientras el repositorio sigue activo, la 
 
 Practicante o junior: usa los pesos de desarrollador. Puedes comentar en el informe qué se espera del nivel, pero no cambies las notas.
 
-Para un líder técnico, las revisiones de PR y las decisiones de diseño pesan mucho y casi nunca están en git. Si no pudiste consultarlas, la confianza es Baja.
+Para un líder técnico, las revisiones de PR y las decisiones de diseño pesan mucho y casi nunca están en git. Consulta las revisiones con `--platform`; si no pudiste, la confianza es Baja.
 
 ## Nota final
 

@@ -6,7 +6,7 @@ Structure of the contribution report. The report is the only deliverable: a sing
 
 - **The verdict comes first:** the reader should get the conclusion in the first lines.
 - **Every figure is traceable** to the report's appendices or a git command.
-- **Self-contained:** the appendices carry the full tables from `summary.md`. Nothing points to files that aren't delivered.
+- **Self-contained:** the appendices are the contents of `annex.md` as is, in the report's language. Nothing points to files that aren't delivered.
 - **Every finding has evidence:** commit `sha`, `path` or `path:line`, PR number.
 - **Charts come from `charts.md`** or from values in `data.json`. Put each chart in Mermaid and, below it, the text-bar version, which renders in any viewer.
 - **Plain language, no adjectives about the person.** "Copied", "there are no tests", "another person rewrote it", "0 commits in 6 weeks". No "unfortunately", "it seems", "could improve" or "lazy".
@@ -53,6 +53,22 @@ Structure of the contribution report. The report is the only deliverable: a sing
 
 ---
 
+## Changes since the previous report
+
+<Only if there's an earlier report for the same person. Compare with its `<!-- developer-contribution-analysis: … -->` marker.>
+
+| | Previous report (<date>, `<sha>`) | Now | Change |
+|---|---|---|---|
+| Score | <n> | <n> | <±n> |
+| Commits | <n> | <n> | <±n> |
+| Own work added | <n> | <n> | <±n> |
+| Own work still present | <n> | <n> | <±n> |
+| Weeks with commits | <n> | <n> | <±n> |
+
+<New findings and findings that were resolved, with evidence.>
+
+---
+
 ## 1. Figures
 
 | Metric | Value |
@@ -62,6 +78,7 @@ Structure of the contribution report. The report is the only deliverable: a sing
 | PRs with their commits / completed by the person | <n> / <n> |
 | Lines added / deleted | +<n> / −<n> |
 | Own-work lines added (no templates, copies or junk) | <n> (<%> of the total) |
+| Own PRs on the platform / others' PRs they reviewed | <n> / <n>, or "not queried" |
 | Their lines still present today | <n> of <repository total> (<%>) |
 | Of those, own work | <n> |
 | Weeks with commits / weeks in the period | <n> / <n> |
@@ -89,14 +106,14 @@ Structure of the contribution report. The report is the only deliverable: a sing
 
 ## 3. Comparison with the team
 
-<Charts: commits, lines still present and production code still present by author (charts.md).>
+<Charts: commits, lines still present and own work still present by author (charts.md).>
 
-| Author | Commits | Lines still present | Production code still present | Test code still present |
-|---|---|---|---|---|
-| **<person>** | … | … | … | … |
-| <other author> | … | … | … | … |
+| Author | Commits | Lines still present | Own work added | Own work still present | Durability |
+|---|---|---|---|---|---|
+| **<person>** | … | … | … | … | … |
+| <other author> | … | … | … | … | … |
 
-<One or two sentences on what the comparison shows. Remember the team's figures include their own templates.>
+<One or two sentences on what the comparison shows. Own work is measured the same way for everyone; lines still present include templates and copies.>
 
 ---
 
@@ -177,51 +194,14 @@ Structure of the contribution report. The report is the only deliverable: a sing
 
 ## Appendices
 
-<The full tables from `summary.md`, so the report doesn't depend on any other file.>
+<The contents of `annex.md` as is, with the "Review" column of appendix F filled in (Confirmed or False positive, with the reason) and the `<!-- developer-contribution-analysis: … -->` marker at the end. It has these sections:>
 
-### A. All commits
-
-| Commit | Date | + | − | % copy | Still present | Class | Subject |
-|---|---|---|---|---|---|---|---|
-
-### B. Files per commit and their source
-
-<One table per commit: file, category, +, −, % copy, source (author, commit, date, path), similar later file, template markers, possible secrets.>
-
-### C. Fate of the files they touched
-
-| File | Category | + theirs | Created by them | Exists today | Theirs today / total | Other authors today or who deleted it |
-|---|---|---|---|---|---|---|
-
-### D. Team
-
-| Author | Email | Commits | + | − | First | Last | Still present | Production present | Tests present |
-|---|---|---|---|---|---|---|---|---|---|
-
-### E. Pull requests
-
-| Merge | Date | PR | Completed by | Their commits / total | Title |
-|---|---|---|---|---|---|
-
-<Other merges that carried their commits (branch syncs or without a PR number).>
-
-### F. Script signals
-
-| Type | Commit | Detail | Review |
-|---|---|---|---|
-| <type> | `<sha>` | <path or subject> | <Confirmed | False positive: why> |
-
-### G. Lines still present per file
-
-| Lines | File |
-|---|---|
-
-### H. How to reproduce
-
-```bash
-python3 -I <skill-folder>/scripts/collect_contribution.py --repo <repo> --author <email> [...] --out "$(mktemp -d)"
-git log --branches --remotes --tags --no-merges --author=<email> --numstat
-git show <sha>
-git blame -w -M --line-porcelain <file> | grep '^author-mail' | sort | uniq -c
-```
+- A. All commits
+- B. Files per commit and their source
+- C. Fate of the files they touched
+- D. Team
+- E. Pull requests (and, if queried, the platform's PRs)
+- F. Script signals
+- G. Lines still present per file
+- H. How to reproduce
 ````
