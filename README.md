@@ -298,10 +298,11 @@ Gives an honest, data-backed picture of what a developer really contributed to a
 **Files**
 
 - `SKILL.md`: the workflow: identify, collect, review, look for what git doesn't show, score, write and save.
-- `scripts/collect_contribution.py`: collects the data into a temporary folder: `summary.md` (summary and scoring metrics), `annex.md` (the report's appendices, in the chosen language), `charts.md` (charts) and `data.json`. It only uses the Python standard library. Its tests are in `tests/developer-contribution-analysis/`.
+- `scripts/collect_contribution.py`: collects the data into a temporary folder: `summary.md` (summary and scoring metrics), `annex.md` (the report's appendices, in the chosen language), `charts.md` (charts) and `data.json`. It only uses the Python standard library.
 - `references/classification.md`: the commit classes, what counts as one's own work by role and the quality problems to look for.
 - `references/scoring.md`: the six dimensions with their anchors, the weights by role, the formula, the levels and the confidence.
 - `references/report-template.md`: the report structure.
+- `scripts/tests/`: automated tests for the script, with a synthetic repository. To run them, from the skill folder: `python3 -m unittest discover -s scripts/tests -v`.
 
 **Requirements and limitations**
 
@@ -328,9 +329,8 @@ Engineering-Skills/
 │   └── <skill-name>/
 │       ├── SKILL.md       # Instructions the agent follows, with frontmatter
 │       ├── references/    # Supporting files the skill reads when needed
-│       └── scripts/       # Supporting scripts, in the skills that have them
+│       └── scripts/       # Supporting scripts and their tests, in the skills that have them
 ├── es/                    # Spanish versions, same folders as en/
-├── tests/                 # Automated tests for the skills' scripts
 ├── AGENTS.md              # Repository conventions for AI agents
 ├── CLAUDE.md              # Imports AGENTS.md for Claude Code
 ├── LICENSE
@@ -338,7 +338,7 @@ Engineering-Skills/
 └── README.es.md           # Spanish README
 ```
 
-Each skill is tested by hand in the tools (see the **Tested** list in each skill's section). The supporting scripts also have automated tests in `tests/`. Run them after changing a script: `python3 -m unittest discover -s tests/developer-contribution-analysis -v`.
+Each skill is tested by hand in the tools (see the **Tested** list in each skill's section). The supporting scripts also have automated tests in `scripts/tests/` inside their skill. Run them after changing a script.
 
 ## Installation
 

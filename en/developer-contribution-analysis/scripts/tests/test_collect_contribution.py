@@ -3,9 +3,9 @@
 They build a small git repository with known cases (a copy, own code, a template,
 a junk file, a weak test, a deletion by someone else, a PR merge, a rename followed
 by a fix, an alias, a service account and a generated file) and check what the
-script reports. Run from the repository root:
+script reports. Run from the skill folder:
 
-    python3 -m unittest discover -s tests/developer-contribution-analysis -v
+    python3 -m unittest discover -s scripts/tests -v
 """
 
 import filecmp
@@ -16,9 +16,13 @@ import sys
 import tempfile
 import unittest
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-SCRIPT = os.path.join(ROOT, "es", "developer-contribution-analysis", "scripts", "collect_contribution.py")
-SCRIPT_EN = os.path.join(ROOT, "en", "developer-contribution-analysis", "scripts", "collect_contribution.py")
+SCRIPTS = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+SCRIPT = os.path.join(SCRIPTS, "collect_contribution.py")
+SKILL = os.path.basename(os.path.dirname(SCRIPTS))
+LANG_ROOT = os.path.dirname(os.path.dirname(SCRIPTS))
+# The same script in the other language folder, when run from the Engineering-Skills repository
+OTHER = os.path.join(os.path.dirname(LANG_ROOT), {"es": "en", "en": "es"}.get(os.path.basename(LANG_ROOT), ""), SKILL,
+                     "scripts", "collect_contribution.py")
 
 ALICE = ("Alice Smith", "alice@example.com")
 BOB = ("Bob Jones", "bob@example.com")
@@ -160,8 +164,9 @@ class CollectContributionTest(unittest.TestCase):
     def signals(self, kind):
         return [s for s in self.data["signals"] if s["type"] == kind]
 
+    @unittest.skipUnless(os.path.exists(OTHER), "not inside the Engineering-Skills repository")
     def test_scripts_are_identical_in_both_languages(self):
-        self.assertTrue(filecmp.cmp(SCRIPT, SCRIPT_EN, shallow=False))
+        self.assertTrue(filecmp.cmp(SCRIPT, OTHER, shallow=False))
 
     def test_counts_commits_of_all_identities(self):
         self.assertEqual(self.data["totals"]["commits"], 12)
