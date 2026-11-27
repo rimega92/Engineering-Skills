@@ -278,24 +278,27 @@ Gives an honest, data-backed picture of what a developer really contributed to a
 
 **How it works**
 
-- Lists the repository's authors to find all the person's identities (several names or emails) and asks you, in a single message, whatever isn't clear: identities, branch, period, role, exclusions and where to save the report. Each question comes with a default answer.
+- Lists the repository's authors, flags service accounts and proposes which identities belong to the same person (several names or emails), in mailmap format. Then it asks you, in a single message, whatever isn't clear: identities, branch, period, role, whether to query the platform, exclusions and where to save the report. Each question comes with a default answer.
 - Runs `scripts/collect_contribution.py`, which only reads the repository with git and extracts the real data:
   - commits, PRs and lines added and deleted;
   - the category of each file (production or test code, deployment, build, configuration, documentation, templates, standard files or files that shouldn't be in git);
-  - which part of their lines already existed in other people's files;
-  - a `git blame` of the whole repository, for the person and for the team;
+  - which part of the lines already existed in other people's files, measured the same way for the whole team, and which files look like templates;
+  - each person's own work: lines in their role's categories, with no copies or templates;
+  - a `git blame` of the whole repository, for the person and for the team, without files marked as generated or vendored in `.gitattributes`;
   - what happened to each file they touched, and who deleted or rewrote their code;
-  - weekly activity and signals to review: repeated commits, junk files, template markers, possible secrets and fixes to their own commits.
+  - weekly activity and signals to review: repeated commits, junk files, template markers, empty classes, tests without assertions, possible secrets and fixes to their own commits;
+  - the volume, durability and consistency metrics of the score, with the suggested score;
+  - on request, their PRs and the PRs of others they reviewed, on GitHub, Azure DevOps or GitLab (read-only, with `gh`, `az` or `glab`).
 - Reviews commit by commit: reads the diffs, confirms copies against their source, tells templates from copies, looks for bugs in their own code and follows the fate of that code.
-- Looks for what git doesn't show (PR reviews with `gh`, `az` or `glab` if available) and notes it as a limitation if it can't verify it.
+- Notes as a limitation what git doesn't show and couldn't be queried: PR reviews without the platform's CLI, assigned tasks, work in other repositories.
 - Scores six dimensions from 1 to 5 (volume of own work, complexity and value, quality, durability, tests and consistency), with role-based weights, and gives a score from 0 to 100, a level and a confidence.
-- Writes the report: verdict, figures, what the contribution is made of, comparison with the team, activity over time, the fate of their code, commit-by-commit analysis, quality findings, what they did contribute, the score and what the analysis can't see. It's the analysis only: it includes no questions for the person. Charts come in Mermaid and as text bars.
+- Writes the report: verdict, figures, what the contribution is made of, comparison with the team, activity over time, the fate of their code, commit-by-commit analysis, quality findings, what they did contribute, the score, what the analysis can't see and the appendices with all the data. If there's an earlier report for the same person, it adds what changed since then. It's the analysis only: it includes no questions for the person. Charts come in Mermaid and as text bars.
 - Delivers a single file: the report in `.contribution-analysis/<person>-<date>.md` at the repository root, or wherever you say, with all the data tables in its appendices. The script's working files go to a temporary folder that's deleted at the end. It gives you the relative and absolute path and keeps the report out of git: the first time, it adds `.contribution-analysis/` to `.gitignore` and reminds you to commit that change.
 
 **Files**
 
 - `SKILL.md`: the workflow: identify, collect, review, look for what git doesn't show, score, write and save.
-- `scripts/collect_contribution.py`: collects the data into a temporary folder (`data.json`, `summary.md` and `charts.md`), which the skill pours into the report. It only uses the Python standard library.
+- `scripts/collect_contribution.py`: collects the data into a temporary folder: `summary.md` (summary and scoring metrics), `annex.md` (the report's appendices, in the chosen language), `charts.md` (charts) and `data.json`. It only uses the Python standard library. Its tests are in `tests/developer-contribution-analysis/`.
 - `references/classification.md`: the commit classes, what counts as one's own work by role and the quality problems to look for.
 - `references/scoring.md`: the six dimensions with their anchors, the weights by role, the formula, the levels and the confidence.
 - `references/report-template.md`: the report structure.
@@ -304,12 +307,16 @@ Gives an honest, data-backed picture of what a developer really contributed to a
 
 - `git` and Python 3.9 or later. In very large repositories the `blame` can take a while; you can narrow it by date or exclude folders.
 - Copy detection only compares against files in this repository. Content copied from other repositories or from documentation shows up as "new to the repository", and the manual review qualifies it when there are signs.
-- It only sees what's in git. PR reviews, assigned tasks and work in other repositories have to be queried separately; if they aren't, the score's confidence drops.
+- It only sees what's in git and, on request, the platform's PRs. Assigned tasks and work in other repositories have to be queried separately; if they aren't, the score's confidence drops.
+- The "own" and "template" flags are rules, not a reading of the code: the skill confirms them with the diff and corrects them when they're wrong.
+- The platform query was tested with GitHub. Azure DevOps and GitLab are implemented but not yet tested against a real server.
 - The score describes the contribution to that repository during that period, not the person's worth as a professional.
 
 **Tested**
 
-- Not tested yet as a skill in Claude Code, OpenAI Codex or GitHub Copilot. The script was tested on a Java microservices monorepo and on this repository.
+- Claude Code: tested end to end on a Java microservices monorepo, with good results.
+- OpenAI Codex and GitHub Copilot: not tested yet.
+- The script has automated tests with a synthetic repository, run on GitHub Actions with Python 3.9 and 3.12.
 
 ## Repository structure
 
@@ -323,6 +330,8 @@ Engineering-Skills/
 │       ├── references/    # Supporting files the skill reads when needed
 │       └── scripts/       # Supporting scripts, in the skills that have them
 ├── es/                    # Spanish versions, same folders as en/
+├── tests/                 # Automated tests for the skills' scripts
+├── .github/workflows/     # GitHub Actions that run those tests
 ├── AGENTS.md              # Repository conventions for AI agents
 ├── CLAUDE.md              # Imports AGENTS.md for Claude Code
 ├── LICENSE
@@ -330,7 +339,7 @@ Engineering-Skills/
 └── README.es.md           # Spanish README
 ```
 
-There are no automated tests. Each skill is tested by hand in the tools (see the **Tested** list in each skill's section).
+Each skill is tested by hand in the tools (see the **Tested** list in each skill's section). The supporting scripts also have automated tests in `tests/`, which GitHub Actions runs on every pull request that changes them. To run them locally: `python3 -m unittest discover -s tests/developer-contribution-analysis -v`.
 
 ## Installation
 

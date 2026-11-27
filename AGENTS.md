@@ -19,6 +19,7 @@ en/<skill-name>/SKILL.md   # English version
 - When creating or changing a skill, update both language versions in the same change. They should match in content and structure. Translate the text, but keep code, commands and file names identical.
 - A skill folder can hold supporting files beside `SKILL.md` (scripts, reference docs, templates). Mirror them in both languages. Translate the text files; don't duplicate scripts that contain no language-specific text unless they need translating.
 - Don't create per-tool folders or copies. One skill folder serves every tool; only the install path differs.
+- Scripts inside a skill are identical in `es/` and `en/`. Their automated tests live in `tests/<skill-name>/` (outside the skill folders, so they aren't installed) and run on GitHub Actions (`.github/workflows/skill-scripts.yml`). When you change a script, update its tests and run them: `python3 -m unittest discover -s tests/<skill-name> -v`.
 
 ## Skill format
 

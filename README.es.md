@@ -278,24 +278,27 @@ Hace una radiografía del aporte real de un desarrollador a un repositorio git, 
 
 **Cómo funciona**
 
-- Lista los autores del repositorio para encontrar todas las identidades de la persona (varios nombres o correos) y te pregunta en un solo mensaje lo que no esté claro: identidades, rama, periodo, rol, exclusiones y dónde guardar el informe. Cada pregunta trae una respuesta por defecto.
+- Lista los autores del repositorio, marca las cuentas de servicio y propone qué identidades son de la misma persona (varios nombres o correos), en formato mailmap. Después te pregunta en un solo mensaje lo que no esté claro: identidades, rama, periodo, rol, si consultar la plataforma, exclusiones y dónde guardar el informe. Cada pregunta trae una respuesta por defecto.
 - Ejecuta `scripts/collect_contribution.py`, que solo lee el repositorio con git y saca los datos reales:
   - commits, PRs y líneas agregadas y eliminadas;
   - la categoría de cada archivo (código de producción o de pruebas, despliegue, build, configuración, documentación, plantillas, archivos estándar o archivos que no deberían estar en git);
-  - qué parte de sus líneas ya existía en archivos de otras personas;
-  - un `git blame` de todo el repositorio, para la persona y para el equipo;
+  - qué parte de las líneas ya existía en archivos de otras personas, medido igual para todo el equipo, y qué archivos tienen aspecto de plantilla;
+  - el trabajo propio de cada persona: líneas en las categorías de su rol, sin copias ni plantillas;
+  - un `git blame` de todo el repositorio, para la persona y para el equipo, sin los archivos marcados como generados o vendorizados en `.gitattributes`;
   - qué pasó con cada archivo que tocó y quién borró o reescribió su código;
-  - la actividad por semana y señales que revisar: commits repetidos, archivos basura, marcadores de plantilla, posibles secretos y correcciones de sus propios commits.
+  - la actividad por semana y señales que revisar: commits repetidos, archivos basura, marcadores de plantilla, clases vacías, pruebas sin aserciones, posibles secretos y correcciones de sus propios commits;
+  - las métricas de volumen, durabilidad y constancia de la calificación, con la nota sugerida;
+  - si lo pides, sus PRs y los PRs de otros que revisó, en GitHub, Azure DevOps o GitLab (solo lectura, con `gh`, `az` o `glab`).
 - Revisa commit por commit: lee los diffs, confirma las copias contra su origen, distingue plantilla de copia, busca errores en el código propio y sigue el destino de ese código.
-- Busca lo que git no muestra (revisiones de PR con `gh`, `az` o `glab` si están disponibles) y lo anota como límite si no puede verificarlo.
+- Anota como límite lo que git no muestra y no se pudo consultar: revisiones de PR sin CLI de la plataforma, tareas asignadas, trabajo en otros repositorios.
 - Califica seis dimensiones de 1 a 5 (volumen de trabajo propio, complejidad y valor, calidad, durabilidad, pruebas y constancia), con pesos según el rol, y da una nota de 0 a 100, un nivel y una confianza.
-- Escribe el informe: veredicto, cifras, composición del aporte, comparación con el equipo, actividad en el tiempo, destino de su código, análisis commit por commit, hallazgos de calidad, lo que sí aportó, la calificación y lo que el análisis no ve. Es solo el análisis: no incluye preguntas para la persona. Las gráficas van en Mermaid y en barras de texto.
+- Escribe el informe: veredicto, cifras, composición del aporte, comparación con el equipo, actividad en el tiempo, destino de su código, análisis commit por commit, hallazgos de calidad, lo que sí aportó, la calificación, lo que el análisis no ve y los anexos con todos los datos. Si ya hay un informe anterior de la misma persona, añade qué cambió desde entonces. Es solo el análisis: no incluye preguntas para la persona. Las gráficas van en Mermaid y en barras de texto.
 - Entrega un solo archivo: el informe en `.contribution-analysis/<persona>-<fecha>.md` en la raíz del repositorio, o donde le digas, con todas las tablas de datos en sus anexos. Los archivos de trabajo del script van a una carpeta temporal que se borra al terminar. Te da la ruta relativa y absoluta, y deja el informe fuera de git: la primera vez añade `.contribution-analysis/` al `.gitignore` y te recuerda que hagas commit de ese cambio.
 
 **Archivos**
 
 - `SKILL.md`: el flujo de trabajo: identificar, recolectar, revisar, buscar lo que git no muestra, calificar, escribir y guardar.
-- `scripts/collect_contribution.py`: recolecta los datos en una carpeta temporal (`data.json`, `summary.md` y `charts.md`), que la skill vuelca en el informe. Solo usa la biblioteca estándar de Python.
+- `scripts/collect_contribution.py`: recolecta los datos en una carpeta temporal: `summary.md` (resumen y métricas de la calificación), `annex.md` (anexos del informe, en el idioma elegido), `charts.md` (gráficas) y `data.json`. Solo usa la biblioteca estándar de Python. Sus pruebas están en `tests/developer-contribution-analysis/`.
 - `references/classification.md`: las clases de commit, qué cuenta como trabajo propio según el rol y los problemas de calidad que buscar.
 - `references/scoring.md`: las seis dimensiones con sus anclas, los pesos por rol, la fórmula, los niveles y la confianza.
 - `references/report-template.md`: la estructura del informe.
@@ -304,12 +307,16 @@ Hace una radiografía del aporte real de un desarrollador a un repositorio git, 
 
 - `git` y Python 3.9 o superior. En repositorios muy grandes el `blame` puede tardar; se puede acotar por fechas o excluir carpetas.
 - La detección de copia solo compara con archivos de este repositorio. Lo copiado de otros repositorios o de documentación aparece como "nuevo en el repositorio", y la revisión manual lo matiza cuando hay indicios.
-- Solo ve lo que está en git. Las revisiones de PR, las tareas asignadas y el trabajo en otros repositorios hay que consultarlos aparte; si no se consultan, la confianza de la calificación baja.
+- Solo ve lo que está en git y, si se lo pides, los PRs de la plataforma. Las tareas asignadas y el trabajo en otros repositorios hay que consultarlos aparte; si no se consultan, la confianza de la calificación baja.
+- Las marcas de "propio" y "plantilla" son reglas, no lectura del código: la skill las confirma con el diff y las corrige cuando no aciertan.
+- La consulta a la plataforma se probó con GitHub. La de Azure DevOps y GitLab está implementada, pero aún sin probar contra un servidor real.
 - La nota describe el aporte en ese repositorio y en ese periodo, no el valor de la persona como profesional.
 
 **Probada**
 
-- Aún sin probar como skill en Claude Code, OpenAI Codex ni GitHub Copilot. El script se probó en un monorepo Java de microservicios y en este repositorio.
+- Claude Code: probada de principio a fin en un monorepo Java de microservicios, con buenos resultados.
+- OpenAI Codex y GitHub Copilot: todavía sin probar.
+- El script tiene pruebas automáticas con un repositorio sintético, que se ejecutan en GitHub Actions con Python 3.9 y 3.12.
 
 ## Estructura del repositorio
 
@@ -323,6 +330,8 @@ Engineering-Skills/
 │       ├── references/    # Archivos de apoyo que la skill lee cuando los necesita
 │       └── scripts/       # Scripts de apoyo, en las skills que los tienen
 ├── es/                    # Versiones en español, mismas carpetas que en/
+├── tests/                 # Pruebas automáticas de los scripts de las skills
+├── .github/workflows/     # GitHub Actions que ejecutan esas pruebas
 ├── AGENTS.md              # Convenciones del repositorio para agentes de IA
 ├── CLAUDE.md              # Importa AGENTS.md para Claude Code
 ├── LICENSE
@@ -330,7 +339,7 @@ Engineering-Skills/
 └── README.es.md           # Este archivo
 ```
 
-No hay pruebas automáticas. Cada skill se prueba a mano en las herramientas (consulta la lista **Probada** en la sección de cada skill).
+Cada skill se prueba a mano en las herramientas (consulta la lista **Probada** en la sección de cada skill). Los scripts de apoyo tienen además pruebas automáticas en `tests/`, que GitHub Actions ejecuta en cada pull request que los cambia. Para ejecutarlas en local: `python3 -m unittest discover -s tests/developer-contribution-analysis -v`.
 
 ## Instalación
 

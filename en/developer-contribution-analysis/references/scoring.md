@@ -4,12 +4,12 @@ How to score a person's contribution to a repository. Six dimensions from 1 to 5
 
 ## Team reference data
 
-Several dimensions compare the person with the team. Compute these references from the `team` table in `data.json`:
+Several dimensions compare the person with the team. The script computes these references and puts them in the "Scoring inputs" section of `summary.md`:
 
-- **Active people:** authors with at least 5 commits in the period, not counting the analyzed person or service accounts and bots (`svc…`, `bot`, `jenkins`, `azure-pipelines`, `dependabot`…).
+- **Active people:** authors with at least 5 commits in the period, not counting the analyzed person or service accounts and bots (`svc…`, `bot`, `jenkins`, `azure-pipelines`, `dependabot`…). Check the list: if the script took a service account for a person, or the other way round, recompute the median with table D of the appendices.
 - **Team median:** the median of a metric across active people. If there are fewer than 2, there's no comparison: score with the absolute anchors and say so.
 
-The team's figures include their own templates and copies, because the script only detects copying for the analyzed person. The comparison favors the person, so it's conservative.
+Own work is measured the same way for everyone: lines in the role's own categories, with less than 50% copy and not template-like. With `--no-team-copy`, copying is detected only for the analyzed person; in that case the team's figures include their templates and copies, and the comparison favors the person. Say so in the report.
 
 ## Dimensions
 
@@ -17,7 +17,7 @@ The team's figures include their own templates and copies, because the script on
 
 How much of their own work they produced, not counting templates, copies, junk or standard files. What counts as their own depends on the role (`references/classification.md`).
 
-**Metric:** the person's lines of own work still present (for a developer, for example, production and test code with copy < 50%) against the team median of lines still present in the same categories.
+**Metric:** the person's own work still present against the team median, measured the same way (`d1` in `summary.md`, with the suggested score). If the commit-by-commit review corrected what counts as own, recompute with your figures.
 
 | Score | Anchor |
 |---|---|
@@ -55,7 +55,7 @@ How correct and clean their deliverables are. Use the problem list in `reference
 
 How much of their own work is still standing and whether others had to redo it.
 
-**Metric:** the percentage of their own-work lines (copy < 50%, no junk) that are still present, and the fate of their code (`references/classification.md`).
+**Metric:** own work still present / own work added (`d4` in `summary.md`, with the team median and the suggested score), and the fate of their code (`references/classification.md`).
 
 | Score | Anchor |
 |---|---|
@@ -85,7 +85,7 @@ Whether they wrote tests that verify the behavior of their code.
 
 Whether they contributed steadily during the time they were supposed to.
 
-**Metric:** weeks with at least one commit, against the weeks in the period when the repository was active while the person was assigned (by default, from their first commit to the repository's last commit in the period).
+**Metric:** weeks with at least one commit, against the weeks in the period when the repository was active while the person was assigned (by default, from their first commit to the repository's last commit in the period). It's in `d6` in `summary.md`, with the days without commits at the end and the suggested score, which already applies the cap below.
 
 | Score | Anchor |
 |---|---|
@@ -110,7 +110,7 @@ If they've gone more than 4 weeks without commits while the repository is still 
 
 Intern or junior: use the developer weights. You can comment in the report on what the level is expected to deliver, but don't change the scores.
 
-For a tech lead, PR reviews and design decisions matter a lot and are rarely in git. If you couldn't query them, confidence is Low.
+For a tech lead, PR reviews and design decisions matter a lot and are rarely in git. Query the reviews with `--platform`; if you couldn't, confidence is Low.
 
 ## Final score
 
