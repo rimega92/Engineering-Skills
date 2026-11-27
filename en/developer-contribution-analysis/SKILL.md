@@ -1,6 +1,6 @@
 ---
 name: developer-contribution-analysis
-description: Gives an honest, data-backed picture of what one developer really contributed to a git repository. Counts commits, PRs, added lines and lines still present (blame of the whole repository), separates the developer's own code from templates, generated files, copies of other files in the repository, configuration tweaks and junk, reviews the quality of each commit, follows what happened to their code (whether it survives or others deleted or rewrote it), compares them with the rest of the team and scores them from 0 to 100 with a per-dimension rubric. Produces a single, complete and well-structured Markdown file with charts, evidence-backed findings, what they did contribute, what the analysis can't see and, on request, questions for a follow-up conversation. It doesn't modify the repository. Use it when the user wants to know what a person really did in a repository, evaluate or track their contribution, run a "blame" on a developer, or prepare a performance conversation with data.
+description: Gives an honest, data-backed picture of what one developer really contributed to a git repository. Counts commits, PRs, added lines and lines still present (blame of the whole repository), separates the developer's own code from templates, generated files, copies of other files in the repository, configuration tweaks and junk, reviews the quality of each commit, follows what happened to their code (whether it survives or others deleted or rewrote it), compares them with the rest of the team and scores them from 0 to 100 with a per-dimension rubric. Produces a single, complete and well-structured Markdown file with charts, evidence-backed findings, what they did contribute and what the analysis can't see. It doesn't modify the repository. Use it when the user wants to know what a person really did in a repository, evaluate or track their contribution or run a "blame" on a developer.
 ---
 
 # developer-contribution-analysis
@@ -45,7 +45,6 @@ The workflow has seven steps:
    - **Repository and branch:** by default, the current repository and its main branch (`origin/HEAD` if it exists, otherwise `HEAD`).
    - **Period:** by default, the whole history. If the person joined or left the project on specific dates, use those dates.
    - **Expected role:** developer (default), DevOps or platform, QA or automation, tech lead, or intern. The role changes what counts as their own work and the scoring weights (`references/scoring.md`).
-   - **Purpose:** tracking, evaluation, or preparing a conversation with the person. If the purpose is a conversation, the report includes evidence-backed questions.
    - **Exclusions:** third-party, generated or vendored folders that shouldn't count (for example, `vendor/**` or `**/generated/**`).
    - **Where to save the report:** by default, `.contribution-analysis/` at the repository root (see step 7).
 3. If the user already gave a detail, don't ask for it. If they leave something unanswered, use the default and note it as an assumption in the report.
@@ -130,7 +129,7 @@ Follow `references/report-template.md`. Rules:
 - **Use the charts in `charts.md`.** Paste the ones that apply. If you make another chart, build it only from values in `data.json` or from a command you cite.
 - **Every figure must be traceable** to the report's appendices or a git command.
 - **Include what they did contribute**, with the same precision as the problems.
-- **Include the conversation questions** only if the purpose is a conversation with the person or the user asks for them. Each question cites its evidence and asks for facts, not opinions.
+- **Analysis only.** The report includes no questions for the person, conversation scripts or recommendations on what to do with them. If the user asks for something like that, do it separately, outside the report.
 
 ## 7. Save and deliver
 

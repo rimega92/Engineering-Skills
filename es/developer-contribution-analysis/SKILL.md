@@ -1,6 +1,6 @@
 ---
 name: developer-contribution-analysis
-description: Hace una radiografía del aporte real de un desarrollador a un repositorio git, con datos reales del historial y sin maquillaje. Calcula commits, PRs, líneas agregadas y vigentes (blame de todo el repositorio), separa lo que es código propio de lo que es plantilla, archivo generado, copia de otros archivos del repositorio, ajuste de configuración o basura, revisa commit por commit la calidad de lo que hizo, sigue qué pasó con su código (si sobrevive o si otros lo borraron o reescribieron), lo compara con el resto del equipo y lo califica de 0 a 100 con una rúbrica. Entrega un único Markdown completo y bien estructurado, con gráficas, hallazgos con evidencia, lo que sí aportó, lo que el análisis no ve y, si se pide, preguntas para una conversación de seguimiento. No modifica el repositorio. Úsala cuando el usuario quiera saber qué hizo de verdad una persona en un repositorio, evaluar o dar seguimiento a su aporte, hacer un "blame" de un desarrollador o preparar una conversación de desempeño con datos.
+description: Hace una radiografía del aporte real de un desarrollador a un repositorio git, con datos reales del historial y sin maquillaje. Calcula commits, PRs, líneas agregadas y vigentes (blame de todo el repositorio), separa lo que es código propio de lo que es plantilla, archivo generado, copia de otros archivos del repositorio, ajuste de configuración o basura, revisa commit por commit la calidad de lo que hizo, sigue qué pasó con su código (si sobrevive o si otros lo borraron o reescribieron), lo compara con el resto del equipo y lo califica de 0 a 100 con una rúbrica. Entrega un único Markdown completo y bien estructurado, con gráficas, hallazgos con evidencia, lo que sí aportó y lo que el análisis no ve. No modifica el repositorio. Úsala cuando el usuario quiera saber qué hizo de verdad una persona en un repositorio, evaluar o dar seguimiento a su aporte o hacer un "blame" de un desarrollador.
 ---
 
 # developer-contribution-analysis
@@ -45,7 +45,6 @@ El flujo tiene siete pasos:
    - **Repositorio y rama:** por defecto, el repositorio actual y su rama principal (`origin/HEAD` si existe; si no, `HEAD`).
    - **Periodo:** por defecto, toda la historia. Si la persona entró o salió del proyecto en fechas concretas, usa esas fechas.
    - **Rol esperado:** desarrollador (por defecto), DevOps o plataforma, QA o automatización, líder técnico, o practicante. El rol cambia qué cuenta como trabajo propio y los pesos de la calificación (`references/scoring.md`).
-   - **Propósito:** seguimiento, evaluación o preparar una conversación con la persona. Si el propósito es una conversación, el informe incluye preguntas con evidencia.
    - **Exclusiones:** carpetas de código de terceros, generado o vendorizado que no deben contar (por ejemplo, `vendor/**` o `**/generated/**`).
    - **Dónde guardar el informe:** por defecto, `.contribution-analysis/` en la raíz del repositorio (ver paso 7).
 3. Si el usuario ya dio un dato, no lo preguntes. Si no responde algo, usa la respuesta por defecto y anótala como supuesto en el informe.
@@ -130,7 +129,7 @@ Sigue `references/report-template.md`. Reglas:
 - **Usa las gráficas de `charts.md`.** Pega las que apliquen. Si haces otra gráfica, constrúyela solo con valores de `data.json` o de un comando que cites.
 - **Cada cifra debe poder rastrearse** hasta los anexos del informe o un comando de git.
 - **Incluye lo que sí aportó**, con la misma precisión que los problemas.
-- **Incluye las preguntas para la conversación** solo si el propósito es una conversación con la persona o el usuario las pide. Cada pregunta cita su evidencia y pide hechos, no opiniones.
+- **Solo el análisis.** El informe no incluye preguntas para la persona, guiones de conversación ni recomendaciones sobre qué hacer con ella. Si el usuario pide algo así, hazlo aparte, fuera del informe.
 
 ## 7. Guardar y entregar
 

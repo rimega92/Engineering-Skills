@@ -268,18 +268,17 @@ Hace una radiografía del aporte real de un desarrollador a un repositorio git, 
 **Cuándo usarla**
 
 - Para dar seguimiento al aporte de una persona en un proyecto, o evaluarlo, con datos en lugar de impresiones.
-- Para preparar una conversación de desempeño o de feedback, con hechos y preguntas basadas en evidencia.
+- Para tener una base de hechos antes de una conversación de desempeño o de feedback.
 - Para saber si un volumen alto de líneas es trabajo propio o plantillas y copias.
 
 **Cómo usarla**
 
 - Pídela: _"Analiza el aporte de juan.perez@empresa.com en este repositorio"_, _"Hazme un blame detallado de Juan Pérez y califica su aporte"_, _"¿Qué hizo de verdad María en este repo desde junio?"_.
-- Para preparar una conversación: _"Analiza el aporte de Juan e incluye preguntas para hablar con él"_.
 - Con un rol distinto: _"Analiza el aporte de Ana, que es DevOps"_.
 
 **Cómo funciona**
 
-- Lista los autores del repositorio para encontrar todas las identidades de la persona (varios nombres o correos) y te pregunta en un solo mensaje lo que no esté claro: identidades, rama, periodo, rol, propósito, exclusiones y dónde guardar el informe. Cada pregunta trae una respuesta por defecto.
+- Lista los autores del repositorio para encontrar todas las identidades de la persona (varios nombres o correos) y te pregunta en un solo mensaje lo que no esté claro: identidades, rama, periodo, rol, exclusiones y dónde guardar el informe. Cada pregunta trae una respuesta por defecto.
 - Ejecuta `scripts/collect_contribution.py`, que solo lee el repositorio con git y saca los datos reales:
   - commits, PRs y líneas agregadas y eliminadas;
   - la categoría de cada archivo (código de producción o de pruebas, despliegue, build, configuración, documentación, plantillas, archivos estándar o archivos que no deberían estar en git);
@@ -290,7 +289,7 @@ Hace una radiografía del aporte real de un desarrollador a un repositorio git, 
 - Revisa commit por commit: lee los diffs, confirma las copias contra su origen, distingue plantilla de copia, busca errores en el código propio y sigue el destino de ese código.
 - Busca lo que git no muestra (revisiones de PR con `gh`, `az` o `glab` si están disponibles) y lo anota como límite si no puede verificarlo.
 - Califica seis dimensiones de 1 a 5 (volumen de trabajo propio, complejidad y valor, calidad, durabilidad, pruebas y constancia), con pesos según el rol, y da una nota de 0 a 100, un nivel y una confianza.
-- Escribe el informe: veredicto, cifras, composición del aporte, comparación con el equipo, actividad en el tiempo, destino de su código, análisis commit por commit, hallazgos de calidad, lo que sí aportó, la calificación, lo que el análisis no ve y, si se pide, preguntas para la conversación. Las gráficas van en Mermaid y en barras de texto.
+- Escribe el informe: veredicto, cifras, composición del aporte, comparación con el equipo, actividad en el tiempo, destino de su código, análisis commit por commit, hallazgos de calidad, lo que sí aportó, la calificación y lo que el análisis no ve. Es solo el análisis: no incluye preguntas para la persona. Las gráficas van en Mermaid y en barras de texto.
 - Entrega un solo archivo: el informe en `.contribution-analysis/<persona>-<fecha>.md` en la raíz del repositorio, o donde le digas, con todas las tablas de datos en sus anexos. Los archivos de trabajo del script van a una carpeta temporal que se borra al terminar. Te da la ruta relativa y absoluta, y deja el informe fuera de git: la primera vez añade `.contribution-analysis/` al `.gitignore` y te recuerda que hagas commit de ese cambio.
 
 **Archivos**
