@@ -286,7 +286,7 @@ Hace una radiografía del aporte real de un desarrollador a un repositorio git, 
   - el trabajo propio de cada persona: líneas en las categorías de su rol, sin copias ni plantillas;
   - un `git blame` de todo el repositorio, para la persona y para el equipo, sin los archivos marcados como generados o vendorizados en `.gitattributes`;
   - qué pasó con cada archivo que tocó y quién borró o reescribió su código;
-  - la actividad por semana y señales que revisar: commits repetidos, archivos basura, marcadores de plantilla, clases vacías, pruebas sin aserciones, posibles secretos y correcciones de sus propios commits;
+  - la actividad por semana y señales que revisar: commits repetidos, archivos basura, marcadores de plantilla, clases vacías, pruebas sin aserciones, posibles secretos, correcciones de sus propios commits y archivos propios que después se repiten en otros sitios (posible plantilla);
   - las métricas de volumen, durabilidad y constancia de la calificación, con la nota sugerida;
   - si lo pides, sus PRs y los PRs de otros que revisó, en GitHub, Azure DevOps o GitLab (solo lectura, con `gh`, `az` o `glab`).
 - Revisa commit por commit: lee los diffs, confirma las copias contra su origen, distingue plantilla de copia, busca errores en el código propio y sigue el destino de ese código.
@@ -315,7 +315,7 @@ Hace una radiografía del aporte real de un desarrollador a un repositorio git, 
 
 **Probada**
 
-- Claude Code: probada de principio a fin en un monorepo Java de microservicios, con buenos resultados.
+- Claude Code: probada de principio a fin en un monorepo Java de microservicios, con dos desarrolladores de perfiles muy distintos, con buenos resultados. Las pruebas reales sirvieron para corregir falsos positivos del script.
 - OpenAI Codex y GitHub Copilot: todavía sin probar.
 - El script tiene pruebas automáticas con un repositorio sintético, que pasan en Python 3.9, 3.13 y 3.15.
 

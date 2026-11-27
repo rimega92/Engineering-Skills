@@ -37,6 +37,13 @@ Rules:
 
 The script applies this table with `--role`. It flags a file as **own** when it's in the role's main categories, has less than 50% copy and isn't template-like, and as a **template** when it has template markers or is small and has only empty types. It measures everyone on the team the same way. These are rules, not a reading of the code: confirm them with the diff and correct them in the analysis when they're wrong.
 
+## Cases the script can't settle on its own
+
+- **Whoever creates the first components.** If the person was the first to generate a component from a template (scaffold, `init`), the template files without markers (for example, the main class or a configuration test) come out as own: there was nothing earlier to compare them with. The script flags them with the "Own, but repeated almost unchanged later" signal when they reappear in two or more places. Confirm it in the diff, discount them from own work and say how many lines you discounted.
+- **Temporary code on the main branch.** Code written to move on while something is missing (an integration contract, a backend) or to pass a quality gate (Sonar coverage). Classify it as 🟨 provisional, say who replaced it and don't count it as a defect if it was intentional and got replaced.
+- **Acceptance tests.** They live in `acceptance-test/` and the script counts them as test templates and data, the same for the whole team. They aren't own work for D1, but they count for D5 and go in "What they did contribute".
+- **Code changed to dodge a tool.** For example, splitting a string so a scanner stops warning. Note it as a way-of-working finding: the right fix is to mark the false positive in the tool.
+
 ## Quality problems to look for
 
 Review their own code (🟩, 🟨, 🟦) against this list. Every problem you find goes into the report with the commit, the path and, where it applies, the line.

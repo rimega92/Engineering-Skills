@@ -286,7 +286,7 @@ Gives an honest, data-backed picture of what a developer really contributed to a
   - each person's own work: lines in their role's categories, with no copies or templates;
   - a `git blame` of the whole repository, for the person and for the team, without files marked as generated or vendored in `.gitattributes`;
   - what happened to each file they touched, and who deleted or rewrote their code;
-  - weekly activity and signals to review: repeated commits, junk files, template markers, empty classes, tests without assertions, possible secrets and fixes to their own commits;
+  - weekly activity and signals to review: repeated commits, junk files, template markers, empty classes, tests without assertions, possible secrets, fixes to their own commits and own files that later repeat elsewhere (possible template);
   - the volume, durability and consistency metrics of the score, with the suggested score;
   - on request, their PRs and the PRs of others they reviewed, on GitHub, Azure DevOps or GitLab (read-only, with `gh`, `az` or `glab`).
 - Reviews commit by commit: reads the diffs, confirms copies against their source, tells templates from copies, looks for bugs in their own code and follows the fate of that code.
@@ -315,7 +315,7 @@ Gives an honest, data-backed picture of what a developer really contributed to a
 
 **Tested**
 
-- Claude Code: tested end to end on a Java microservices monorepo, with good results.
+- Claude Code: tested end to end on a Java microservices monorepo, with two developers of very different profiles, with good results. The real runs were used to fix false positives in the script.
 - OpenAI Codex and GitHub Copilot: not tested yet.
 - The script has automated tests with a synthetic repository, which pass on Python 3.9, 3.13 and 3.15.
 

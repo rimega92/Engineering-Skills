@@ -142,5 +142,6 @@ Di siempre qué subiría la confianza.
 
 - Cada nota cita sus métricas o sus commits. "D3 = 2: el único código propio (`a1b2c3d4`) dejó un timeout fijo de 1500 s, y otro compañero lo reescribió completo" es una justificación; "D3 = 2: calidad mejorable" no lo es.
 - No promedies a ojo. Calcula la nota con la fórmula.
+- Si una dimensión encaja entre dos anclas (por ejemplo, código limpio y probado, pero con archivos basura en git), elige la que mejor describe el impacto, explica por qué y di cuál sería la nota final con la otra. Si el nivel cambia según esa elección, dilo en el veredicto.
 - Si la rúbrica no encaja con un caso (por ejemplo, un repositorio de solo documentación), dilo y explica cómo lo calificaste.
 - La nota describe el aporte en este repositorio y en este periodo, no el valor de la persona como profesional. Escríbelo así en el informe.

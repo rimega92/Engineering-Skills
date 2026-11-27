@@ -142,5 +142,6 @@ Always say what would raise the confidence.
 
 - Every score cites its metrics or commits. "D3 = 2: their only own code (`a1b2c3d4`) hard-coded a 1500 s timeout, and a teammate rewrote it entirely" is a justification; "D3 = 2: quality could improve" isn't.
 - Don't average by eye. Compute the score with the formula.
+- If a dimension fits between two anchors (for example, clean, tested code but with junk files in git), pick the one that best describes the impact, explain why and say what the final score would be with the other. If the level changes with that choice, say so in the verdict.
 - If the rubric doesn't fit a case (for example, a documentation-only repository), say so and explain how you scored it.
 - The score describes the contribution to this repository during this period, not the person's worth as a professional. Write it that way in the report.
